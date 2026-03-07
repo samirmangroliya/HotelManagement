@@ -3,8 +3,10 @@ package com.samir.hotelmanagement.ui.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -35,9 +37,7 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterClicked: () -> Unit = {}) 
     var confirmPassword by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -48,27 +48,27 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterClicked: () -> Unit = {}) 
             value = firstName,
             onValueChange = { firstName = it },
             label = { Text("First Name") },
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         OutlinedTextField(
             value = lastName,
             onValueChange = { lastName = it },
             label = { Text("Last Name") },
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
             label = { Text("Phone") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         OutlinedTextField(
             value = password,
@@ -76,7 +76,7 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterClicked: () -> Unit = {}) 
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         OutlinedTextField(
             value = confirmPassword,
@@ -84,9 +84,13 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterClicked: () -> Unit = {}) 
             label = { Text("Confirm Password") },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
         )
-        Button(onClick = onRegisterClicked) {
+        Button(
+            onClick = onRegisterClicked,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            shape = RoundedCornerShape(32)
+        ) {
             Text("Register")
         }
     }

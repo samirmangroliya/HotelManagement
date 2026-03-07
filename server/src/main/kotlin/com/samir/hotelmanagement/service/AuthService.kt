@@ -10,28 +10,29 @@ import com.samir.hotelmanagement.models.User
 class AuthService(private val userRepository: UserRepository) {
 
     suspend fun register(request: RegisterRequest): BaseResponse<User> {
-        if (userRepository.findUserByUsername(request.username) != null) {
-            return BaseResponse(success = false, message = "Username already exists")
-        }
         if (userRepository.findUserByEmail(request.email) != null) {
             return BaseResponse(success = false, message = "Email already exists")
         }
 
+        if (userRepository.findUserByEmail(request.phone) != null) {
+            return BaseResponse(success = false, message = "Phone Number already exists")
+        }
+
         val passwordHash = BCrypt.withDefaults().hashToString(12, request.password.toCharArray())
-        val user = userRepository.createUser(request.username, request.email, passwordHash)
+        val user = userRepository.createUser(request.firstName, request.lastName, request.phone, request.email, passwordHash)
 
         return if (user != null) {
-            BaseResponse(success = true, message = "Registration successful", data = user)
+            BaseResponse(success = true, message = "Registration successful, your id is: $user.id", data = user)
         } else {
             BaseResponse(success = false, message = "Registration failed")
         }
     }
 
     suspend fun login(request: LoginRequest): BaseResponse<User> {
-        val user = userRepository.findUserByUsername(request.username)
+        val user = userRepository.findUserByEmail(request.email)
             ?: return BaseResponse(success = false, message = "Invalid username or password")
 
-        val passwordHash = userRepository.getPasswordHash(request.username)
+        val passwordHash = userRepository.getPasswordHash(request.email)
             ?: return BaseResponse(success = false, message = "Invalid username or password")
 
         val result = BCrypt.verifyer().verify(request.password.toCharArray(), passwordHash)

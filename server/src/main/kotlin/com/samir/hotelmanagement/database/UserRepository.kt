@@ -2,18 +2,16 @@ package com.samir.hotelmanagement.database
 
 import com.samir.hotelmanagement.models.User
 import org.jetbrains.exposed.sql.*
+import kotlin.Int
+
 class UserRepository {
     private fun resultRowToUser(row: ResultRow) = User(
         id = row[Users.id],
-        username = row[Users.username],
-        email = row[Users.email]
+        email = row[Users.email],
+        firstName = row[Users.firstName],
+        lastName = row[Users.lastName],
+        phone = row[Users.phone]
     )
-
-    suspend fun findUserByUsername(username: String): User? = DatabaseFactory.dbQuery {
-        Users.selectAll().where { Users.username eq username }
-            .map(::resultRowToUser)
-            .singleOrNull()
-    }
 
     suspend fun findUserByEmail(email: String): User? = DatabaseFactory.dbQuery {
         Users.selectAll().where { Users.email eq email }
@@ -21,15 +19,17 @@ class UserRepository {
             .singleOrNull()
     }
 
-    suspend fun getPasswordHash(username: String): String? = DatabaseFactory.dbQuery {
-        Users.selectAll().where { Users.username eq username }
+    suspend fun getPasswordHash(email: String): String? = DatabaseFactory.dbQuery {
+        Users.selectAll().where { Users.email eq email }
             .map { it[Users.password] }
             .singleOrNull()
     }
 
-    suspend fun createUser(username: String, email: String, passwordHash: String): User? = DatabaseFactory.dbQuery {
+    suspend fun createUser(firstName: String, lastName: String, phone: String, email: String, passwordHash: String): User? = DatabaseFactory.dbQuery {
         val insertStatement = Users.insert {
-            it[Users.username] = username
+            it[Users.firstName] = firstName
+            it[Users.lastName] = lastName
+            it[Users.phone] = phone
             it[Users.email] = email
             it[Users.password] = passwordHash
         }

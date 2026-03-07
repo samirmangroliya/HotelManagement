@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun RegisterScreen(onRegisterClicked: () -> Unit = {}) {
+fun RegisterScreen(onBack: () -> Unit = {}, onRegisterClicked: () -> Unit = {}) {
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -42,6 +42,7 @@ fun RegisterScreen(onRegisterClicked: () -> Unit = {}) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         Text("Register")
         OutlinedTextField(
             value = firstName,

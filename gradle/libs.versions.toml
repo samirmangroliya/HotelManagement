@@ -24,7 +24,7 @@ exposed = "1.1.1"
 postgresql = "42.7.10"
 hikaricp = "7.0.2"
 bcrypt = "0.10.2"
-nav3 = "1.0.0-alpha01"
+nav3 = "1.0.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

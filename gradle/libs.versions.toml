@@ -24,6 +24,7 @@ exposed = "1.1.1"
 postgresql = "42.7.10"
 hikaricp = "7.0.2"
 bcrypt = "0.10.2"
+nav3 = "1.0.0-alpha01"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -59,6 +60,8 @@ hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

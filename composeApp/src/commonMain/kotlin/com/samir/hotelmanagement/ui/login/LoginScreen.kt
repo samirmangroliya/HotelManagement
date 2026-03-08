@@ -28,63 +28,53 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun LoginScreen(onLoginClicked: () -> Unit = {}) {
+fun LoginScreen(onLoginSuccess: () -> Unit = {}, onClickRegister: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isRegister by remember { mutableStateOf(false) }
 
-    if (isRegister) {
-        RegisterScreen(
-            onBack = { isRegister = false },
-            onRegisterClicked = {
-                // Handle register logic
-                isRegister = false
-            }
+    Column(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Login Now",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 32.dp)
         )
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(modifier = Modifier.height(48.dp))
+
+        Button(
+            onClick = onLoginSuccess,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            shape = RoundedCornerShape(32)
         ) {
-            Text(
-                text = "Login Now",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                visualTransformation = PasswordVisualTransformation()
-            )
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Button(
-                onClick = onLoginClicked,
-                modifier = Modifier.fillMaxWidth(0.8f),
-                shape = RoundedCornerShape(32)
-            ) {
-                Text("Login")
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = { isRegister = true },
-                modifier = Modifier.fillMaxWidth(0.8f),
-                shape = RoundedCornerShape(32)
-            ) {
-                Text("Register")
-            }
+            Text("Login")
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onClickRegister,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            shape = RoundedCornerShape(32)
+        ) {
+            Text("Register")
         }
     }
 }
+

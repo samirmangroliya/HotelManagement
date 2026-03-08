@@ -2,24 +2,50 @@ package com.samir.hotelmanagement
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
+import com.samir.hotelmanagement.navigation.NavKey
 import com.samir.hotelmanagement.ui.dashboard.MainScreen
 import com.samir.hotelmanagement.ui.login.LoginScreen
+import com.samir.hotelmanagement.ui.login.RegisterScreen
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
-        var isLoggedIn by remember { mutableStateOf(false) }
+        // Navigation 3 uses a simple observable list as a back stack
+        val backStack = remember { mutableStateListOf<NavKey>(NavKey.Login) }
 
-        if (isLoggedIn) {
-            MainScreen()
-        } else {
-            LoginScreen(onLoginClicked = { isLoggedIn = true })
-        }
+        NavDisplay(backStack = backStack, onBack = {
+            if (backStack.isNotEmpty()) {
+                backStack.removeAt(backStack.size - 1)
+            }
+        }, entryProvider = { key ->
+            when (key) {
+                NavKey.Login -> NavEntry(key) {
+                    LoginScreen(
+                        onLoginSuccess = { backStack.add(NavKey.Main) },
+                        onClickRegister = { backStack.add(NavKey.Register) })
+                }
+
+                NavKey.Register -> NavEntry(key) {
+                    RegisterScreen(onBack = {
+                        if (backStack.isNotEmpty()) {
+                            backStack.removeAt(backStack.size - 1)
+                        }
+                    }, onRegisterClicked = {
+                        // Handle registration success
+                        if (backStack.isNotEmpty()) {
+                            backStack.removeAt(backStack.size - 1)
+                        }
+                    })
+                }
+
+                NavKey.Main -> NavEntry(key) {
+                    MainScreen()
+                }
+            }
+        })
     }
 }

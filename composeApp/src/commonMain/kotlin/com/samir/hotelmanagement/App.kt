@@ -25,7 +25,10 @@ fun App() {
             when (key) {
                 NavKey.Login -> NavEntry(key) {
                     LoginScreen(
-                        onLoginSuccess = { backStack.add(NavKey.Main) },
+                        onLoginSuccess = {
+                            backStack.clear()
+                            backStack.add(NavKey.Main)
+                        },
                         onClickRegister = { backStack.add(NavKey.Register) })
                 }
 

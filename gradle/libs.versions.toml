@@ -20,11 +20,11 @@ material3 = "1.10.0-alpha05"
 kotlinStdlib = "2.3.10"
 runner = "1.7.0"
 core = "1.7.0"
-exposed = "1.1.1"
+exposed = "0.59.0" #don't update it breaks sql import in server repo
 postgresql = "42.7.10"
 hikaricp = "7.0.2"
 bcrypt = "0.10.2"
-nav3 = "1.1.0-alpha04"
+nav3 = "1.1.0-alpha04" #don't update it breaks navigation in ios
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

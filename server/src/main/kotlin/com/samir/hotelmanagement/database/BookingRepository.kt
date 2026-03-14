@@ -1,7 +1,10 @@
 package com.samir.hotelmanagement.database
 
 import com.samir.hotelmanagement.models.Booking
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 
 class BookingRepository {
     private fun resultRowToBooking(row: ResultRow) = Booking(

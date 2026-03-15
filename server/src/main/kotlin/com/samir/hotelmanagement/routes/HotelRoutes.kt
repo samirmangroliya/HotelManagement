@@ -1,7 +1,7 @@
 package com.samir.hotelmanagement.routes
 
 import com.samir.hotelmanagement.database.HotelRepository
-import com.samir.hotelmanagement.models.BaseResponse
+import com.samir.network.models.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

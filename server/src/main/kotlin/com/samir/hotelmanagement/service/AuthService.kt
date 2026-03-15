@@ -2,10 +2,10 @@ package com.samir.hotelmanagement.service
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.samir.hotelmanagement.database.UserRepository
-import com.samir.hotelmanagement.models.BaseResponse
-import com.samir.hotelmanagement.models.LoginRequest
-import com.samir.hotelmanagement.models.RegisterRequest
-import com.samir.hotelmanagement.models.User
+import com.samir.network.models.BaseResponse
+import com.samir.network.models.LoginRequest
+import com.samir.network.models.RegisterRequest
+import com.samir.network.models.User
 
 class AuthService(private val userRepository: UserRepository) {
 
@@ -22,7 +22,7 @@ class AuthService(private val userRepository: UserRepository) {
         val user = userRepository.createUser(request.firstName, request.lastName, request.phone, request.email, passwordHash)
 
         return if (user != null) {
-            BaseResponse(success = true, message = "Registration successful, your id is: $user.id", data = user)
+            BaseResponse(success = true, message = "Registration successful, your id is: {${user.id}}", data = user)
         } else {
             BaseResponse(success = false, message = "Registration failed")
         }

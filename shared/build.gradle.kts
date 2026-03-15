@@ -30,7 +30,11 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.koin.compose)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            api(projects.network)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

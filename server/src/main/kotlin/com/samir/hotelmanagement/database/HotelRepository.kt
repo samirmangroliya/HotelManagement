@@ -1,7 +1,7 @@
 package com.samir.hotelmanagement.database
 
-import com.samir.hotelmanagement.models.Hotel
-import com.samir.hotelmanagement.models.Room
+import com.samir.network.models.Hotel
+import com.samir.network.models.Room
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 

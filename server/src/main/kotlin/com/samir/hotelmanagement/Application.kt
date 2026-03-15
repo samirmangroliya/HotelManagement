@@ -37,7 +37,7 @@ fun Application.module() {
 
     routing {
         get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}")
+            call.respondText("Ktor: ${Greeting().greet()}...Server is Running now...")
         }
         
         // Register Auth Routes

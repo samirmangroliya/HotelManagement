@@ -1,4 +1,4 @@
-package com.samir.hotelmanagement.models
+package com.samir.network.models
 
 import kotlinx.serialization.Serializable
 

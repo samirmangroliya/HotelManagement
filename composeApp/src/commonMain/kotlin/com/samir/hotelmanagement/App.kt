@@ -9,7 +9,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.samir.hotelmanagement.navigation.NavKey
 import com.samir.hotelmanagement.ui.dashboard.MainScreen
 import com.samir.hotelmanagement.ui.login.LoginScreen
-import com.samir.hotelmanagement.ui.login.RegisterScreen
+import com.samir.hotelmanagement.ui.register.RegisterScreen
 
 @Composable
 fun App() {
@@ -18,7 +18,7 @@ fun App() {
         val backStack = remember { mutableStateListOf<NavKey>(NavKey.Login) }
 
         NavDisplay(backStack = backStack, onBack = {
-            if (backStack.isNotEmpty()) {
+            if (backStack.size > 1) {
                 backStack.removeAt(backStack.size - 1)
             }
         }, entryProvider = { key ->
@@ -26,20 +26,23 @@ fun App() {
                 NavKey.Login -> NavEntry(key) {
                     LoginScreen(
                         onLoginSuccess = {
-                            backStack.clear()
                             backStack.add(NavKey.Main)
+                            // Remove everything except the new Main screen to prevent empty backstack crash
+                            while (backStack.size > 1) {
+                                backStack.removeAt(0)
+                            }
                         },
                         onClickRegister = { backStack.add(NavKey.Register) })
                 }
 
                 NavKey.Register -> NavEntry(key) {
                     RegisterScreen(onBack = {
-                        if (backStack.isNotEmpty()) {
+                        if (backStack.size > 1) {
                             backStack.removeAt(backStack.size - 1)
                         }
-                    }, onRegisterClicked = {
+                    }, onRegisterSuccess = {
                         // Handle registration success
-                        if (backStack.isNotEmpty()) {
+                        if (backStack.size > 1) {
                             backStack.removeAt(backStack.size - 1)
                         }
                     })

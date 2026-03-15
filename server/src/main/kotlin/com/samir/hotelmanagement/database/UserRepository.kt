@@ -1,6 +1,6 @@
 package com.samir.hotelmanagement.database
 
-import com.samir.hotelmanagement.models.User
+import com.samir.network.models.User
 import org.jetbrains.exposed.sql.*
 import kotlin.Int
 

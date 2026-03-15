@@ -47,9 +47,48 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterSuccess: () -> Unit = {}) 
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val viewModel: RegisterViewModel = koinInject()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    fun validate(): Boolean {
+        if (firstName.isBlank()) {
+            errorMessage = "First name cannot be blank"
+            return false
+        }
+        if (lastName.isBlank()) {
+            errorMessage = "Last name cannot be blank"
+            return false
+        }
+        if (firstName == lastName) {
+            errorMessage = "First name and last name cannot be the same"
+            return false
+        }
+        if (email.isBlank()) {
+            errorMessage = "Email cannot be blank"
+            return false
+        }
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]{2,}$"
+        if (!Regex(emailRegex).matches(email)) {
+            errorMessage = "Invalid email format"
+            return false
+        }
+        if (phone.length != 10) {
+            errorMessage = "Phone number should be 10 chars long"
+            return false
+        }
+        if (password.length < 6) {
+            errorMessage = "Password should be at least 6 chars long"
+            return false
+        }
+        if (password != confirmPassword) {
+            errorMessage = "Password and confirm password should be same"
+            return false
+        }
+        errorMessage = null
+        return true
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(vertical = 60.dp)
@@ -77,44 +116,58 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterSuccess: () -> Unit = {}) 
             modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+
             OutlinedTextField(
                 value = firstName,
-                onValueChange = { firstName = it },
+                onValueChange = { firstName = it; errorMessage = null },
                 label = { Text("First Name") },
-                modifier = Modifier.fillMaxWidth().padding(top = 48.dp, bottom = 16.dp)
+                isError = errorMessage?.contains("first name", ignoreCase = true) == true,
+                modifier = Modifier.fillMaxWidth().padding(top = 32.dp, bottom = 16.dp)
             )
             OutlinedTextField(
                 value = lastName,
-                onValueChange = { lastName = it },
+                onValueChange = { lastName = it; errorMessage = null },
                 label = { Text("Last Name") },
+                isError = errorMessage?.contains("last name", ignoreCase = true) == true,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
             )
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it; errorMessage = null },
                 label = { Text("Email") },
+                isError = errorMessage?.contains("email", ignoreCase = true) == true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
             )
             OutlinedTextField(
                 value = phone,
-                onValueChange = { phone = it },
+                onValueChange = { phone = it; errorMessage = null },
                 label = { Text("Phone") },
+                isError = errorMessage?.contains("phone", ignoreCase = true) == true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
             )
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { password = it; errorMessage = null },
                 label = { Text("Password") },
+                isError = errorMessage?.contains("password", ignoreCase = true) == true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
             )
             OutlinedTextField(
                 value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                onValueChange = { confirmPassword = it; errorMessage = null },
                 label = { Text("Confirm Password") },
+                isError = errorMessage?.contains("confirm", ignoreCase = true) == true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
@@ -122,13 +175,15 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterSuccess: () -> Unit = {}) 
             Spacer(modifier = Modifier.height(48.dp))
             Button(
                 onClick = {
-                    viewModel.register(
-                        firstName,
-                        lastName,
-                        email,
-                        phone,
-                        password
-                    )
+                    if (validate()) {
+                        viewModel.register(
+                            firstName,
+                            lastName,
+                            email,
+                            phone,
+                            password
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(0.8f),
                 enabled = uiState !is UiState.Loading,

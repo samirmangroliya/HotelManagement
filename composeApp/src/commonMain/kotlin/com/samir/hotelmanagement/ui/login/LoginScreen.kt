@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,8 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,15 +37,32 @@ import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit = {}, onClickRegister: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isRegisterSuccess = mutableStateOf(false)
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val viewModel: LoginViewModel = koinInject()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    fun validate(): Boolean {
+        if (email.isBlank()) {
+            errorMessage = "Email cannot be blank"
+            return false
+        }
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]{2,}$"
+        if (!Regex(emailRegex).matches(email)) {
+            errorMessage = "Invalid email format"
+            return false
+        }
+        if (password.length < 6) {
+            errorMessage = "Password should be at least 6 chars long"
+            return false
+        }
+        errorMessage = null
+        return true
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp),
@@ -58,28 +76,42 @@ fun LoginScreen(onLoginSuccess: () -> Unit = {}, onClickRegister: () -> Unit = {
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { email = it; errorMessage = null },
             label = { Text("Email") },
+            isError = errorMessage?.contains("email", ignoreCase = true) == true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it; errorMessage = null },
             label = { Text("Password") },
+            isError = errorMessage?.contains("password", ignoreCase = true) == true,
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
         Spacer(modifier = Modifier.height(48.dp))
 
         Button(
             onClick = {
-                viewModel.login(
-                    email,
-                    password
-                )
+                if (validate()) {
+                    viewModel.login(
+                        email,
+                        password
+                    )
+                }
             },
             enabled = uiState !is UiState.Loading,
             modifier = Modifier.fillMaxWidth(0.8f),
@@ -129,7 +161,7 @@ fun showUIState(uiState: UiState<BaseResponse<User>>, onLoginSuccess: () -> Unit
                 }
             } else {
                 Text(
-                    text = "Login Failed..."+data.message,
+                    text = "Login Failed..." + data.message,
                     color = MaterialTheme.colorScheme.error
                 )
             }

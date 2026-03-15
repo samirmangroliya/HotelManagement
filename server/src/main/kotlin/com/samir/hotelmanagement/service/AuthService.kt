@@ -10,6 +10,31 @@ import com.samir.network.models.User
 class AuthService(private val userRepository: UserRepository) {
 
     suspend fun register(request: RegisterRequest): BaseResponse<User> {
+
+        if (request.firstName.isBlank()) {
+            return BaseResponse(success = false, message = "First name cannot be blank")
+        }
+        if (request.lastName.isBlank()) {
+            return BaseResponse(success = false, message = "Last name cannot be blank")
+        }
+        if (request.firstName == request.lastName) {
+            return BaseResponse(success = false, message = "First name and last name cannot be the same")
+        }
+
+        if (request.email.isBlank()) {
+            return BaseResponse(success = false, message = "email cannot be blank")
+        }
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]{2,}$"
+        if (!Regex(emailRegex).matches(request.email)) {
+            return BaseResponse(success = false, message = "Invalid email format")
+        }
+        if (request.phone.length != 10) {
+            return BaseResponse(success = false, message = "Phone number should be 10 chars long")
+        }
+        if (request.password.length < 6) {
+            return BaseResponse(success = false, message = "Password should be at least 6 chars long")
+        }
+
         if (userRepository.findUserByEmail(request.email) != null) {
             return BaseResponse(success = false, message = "Email already exists")
         }
@@ -29,6 +54,17 @@ class AuthService(private val userRepository: UserRepository) {
     }
 
     suspend fun login(request: LoginRequest): BaseResponse<User> {
+        if (request.email.isBlank()) {
+            return BaseResponse(success = false, message = "email cannot be blank")
+        }
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]{2,}$"
+        if (!Regex(emailRegex).matches(request.email)) {
+            return BaseResponse(success = false, message = "Invalid email format")
+        }
+        if (request.password.length < 6) {
+            return BaseResponse(success = false, message = "Password should be at least 6 chars long")
+        }
+
         val user = userRepository.findUserByEmail(request.email)
             ?: return BaseResponse(success = false, message = "Invalid username or password")
 

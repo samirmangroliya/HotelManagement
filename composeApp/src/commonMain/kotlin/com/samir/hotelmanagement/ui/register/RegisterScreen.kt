@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import com.samir.network.models.User
 import com.samir.hotelmanagement.viewmodels.RegisterViewModel
 import hotelmanagement.composeapp.generated.resources.Res
 import hotelmanagement.composeapp.generated.resources.ic_arrow_back
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
@@ -152,13 +154,26 @@ fun showUIState(uiState: UiState<BaseResponse<User>>, onRegisterSuccess: () -> U
         }
 
         is UiState.Success -> {
-
-            Text(
-                text = "Registration Successful",
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            onRegisterSuccess()
+            val data = uiState.data
+            if (data.success) {
+                Text(
+                    text = "Registration Successful...Login Now...",
+                    fontStyle = MaterialTheme.typography.titleLarge.fontStyle,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                    fontSize = 30.sp,
+                    modifier = Modifier.padding(top = 32.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                LaunchedEffect(Unit) {
+                    delay(3000)
+                    onRegisterSuccess()
+                }
+            } else {
+                Text(
+                    text = data.message,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
 
         is UiState.Error -> {

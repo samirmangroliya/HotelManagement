@@ -7,6 +7,7 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 
 object HttpClientFactory {

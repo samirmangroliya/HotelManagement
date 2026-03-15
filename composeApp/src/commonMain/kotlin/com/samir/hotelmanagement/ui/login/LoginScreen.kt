@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.samir.hotelmanagement.domain.state.UiState
-import com.samir.hotelmanagement.ui.register.showUIState
 import com.samir.hotelmanagement.viewmodels.LoginViewModel
 import com.samir.network.models.BaseResponse
 import com.samir.network.models.User
+import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,6 +90,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit = {}, onClickRegister: () -> Unit = {
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = onClickRegister,
+            enabled = uiState !is UiState.Loading,
             modifier = Modifier.fillMaxWidth(0.8f),
             shape = RoundedCornerShape(32)
         ) {
@@ -111,13 +113,26 @@ fun showUIState(uiState: UiState<BaseResponse<User>>, onLoginSuccess: () -> Unit
         }
 
         is UiState.Success -> {
-
-            Text(
-                text = "Login Successful",
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            onLoginSuccess()
+            val data = uiState.data
+            if (data.success) {
+                Text(
+                    text = "Login Successful...Redirecting...",
+                    fontStyle = MaterialTheme.typography.titleLarge.fontStyle,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                    fontSize = 30.sp,
+                    modifier = Modifier.padding(top = 32.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                LaunchedEffect(Unit) {
+                    delay(3000)
+                    onLoginSuccess()
+                }
+            } else {
+                Text(
+                    text = "Login Failed..."+data.message,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
 
         is UiState.Error -> {

@@ -5,6 +5,6 @@ import com.samir.hotelmanagement.di.initKoin
 
 fun MainViewController() = ComposeUIViewController(
     configure = {
-        initKoin()
+        initKoin {}
     }
 ) { App() }

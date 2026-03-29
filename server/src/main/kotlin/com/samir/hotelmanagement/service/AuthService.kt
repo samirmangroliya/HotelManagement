@@ -1,11 +1,11 @@
 package com.samir.hotelmanagement.service
 
 import at.favre.lib.crypto.bcrypt.BCrypt
+import com.samir.core.BaseResponse
+import com.samir.core.RegisterRequest
+import com.samir.core.LoginRequest
+import com.samir.core.User
 import com.samir.hotelmanagement.database.UserRepository
-import com.samir.network.models.BaseResponse
-import com.samir.network.models.LoginRequest
-import com.samir.network.models.RegisterRequest
-import com.samir.network.models.User
 
 class AuthService(private val userRepository: UserRepository) {
 

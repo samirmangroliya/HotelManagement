@@ -55,10 +55,13 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(projects.shared)
             implementation(libs.androidx.navigation3.runtime)
             implementation(libs.androidx.navigation3.ui)
             implementation(libs.koin.compose)
+            implementation(projects.di)
+            implementation(projects.viewmodels)
+            implementation(projects.core)
+            implementation(projects.domain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

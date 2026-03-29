@@ -7,12 +7,14 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.samir.network"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+
     }
 
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -36,6 +38,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.serialization.json)
+            implementation(projects.core)
         }
 
         androidMain.dependencies {

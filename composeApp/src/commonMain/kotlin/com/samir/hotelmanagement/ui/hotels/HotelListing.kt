@@ -13,20 +13,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.samir.hotelmanagement.ui.topbar.TopBar
-import com.samir.hotelmanagement.viewmodels.HotelViewModel
+import com.samir.viewmodels.HotelViewModel
 import hotelmanagement.composeapp.generated.resources.Res
 import hotelmanagement.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HotelList() {
+fun HotelList(onClickHotel: (hotelId:Int) -> Unit = {}) {
     Scaffold(
         topBar = { TopBar(stringResource(Res.string.app_name)) }
     ) { innerPadding ->
-        val hotelViewModel = viewModel { HotelViewModel() }
+        val hotelViewModel: HotelViewModel = koinInject()
 
         Column(
             modifier = Modifier.padding(innerPadding)
@@ -36,7 +36,7 @@ fun HotelList() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onClick = {
-                
+                onClickHotel(2)
             }) {
                 Text("Visit Hotels")
             }

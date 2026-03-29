@@ -29,10 +29,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.samir.hotelmanagement.domain.state.UiState
-import com.samir.hotelmanagement.viewmodels.LoginViewModel
-import com.samir.network.models.BaseResponse
-import com.samir.network.models.User
+import com.samir.core.BaseResponse
+import com.samir.core.User
+import com.samir.domain.state.UiState
+import com.samir.viewmodels.LoginViewModel
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 
@@ -113,7 +113,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit = {}, onClickRegister: () -> Unit = {
                     )
                 }
             },
-            enabled = uiState !is UiState.Loading,
+            enabled = uiState !is UiState.Loading || uiState !is UiState.Success,
             modifier = Modifier.fillMaxWidth(0.8f),
             shape = RoundedCornerShape(32)
         ) {
@@ -122,19 +122,19 @@ fun LoginScreen(onLoginSuccess: () -> Unit = {}, onClickRegister: () -> Unit = {
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = onClickRegister,
-            enabled = uiState !is UiState.Loading,
+            enabled = uiState !is UiState.Loading || uiState !is UiState.Loading,
             modifier = Modifier.fillMaxWidth(0.8f),
             shape = RoundedCornerShape(32)
         ) {
             Text("Register")
         }
-        showUIState(uiState, onLoginSuccess)
+        ShowUIState(uiState, onLoginSuccess)
     }
 }
 
 
 @Composable
-fun showUIState(uiState: UiState<BaseResponse<User>>, onLoginSuccess: () -> Unit = {}) {
+fun ShowUIState(uiState: UiState<BaseResponse<User>>, onLoginSuccess: () -> Unit = {}) {
     when (uiState) {
 
         UiState.Loading -> {
@@ -151,7 +151,7 @@ fun showUIState(uiState: UiState<BaseResponse<User>>, onLoginSuccess: () -> Unit
                     text = "Login Successful...Redirecting...",
                     fontStyle = MaterialTheme.typography.titleLarge.fontStyle,
                     fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                    fontSize = 30.sp,
+                    fontSize = 20.sp,
                     modifier = Modifier.padding(top = 32.dp),
                     color = MaterialTheme.colorScheme.primary
                 )

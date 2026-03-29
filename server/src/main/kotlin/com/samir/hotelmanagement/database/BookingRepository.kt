@@ -1,6 +1,6 @@
 package com.samir.hotelmanagement.database
 
-import com.samir.network.models.Booking
+import com.samir.core.Booking
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll

@@ -8,6 +8,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.samir.hotelmanagement.navigation.NavKey
 import com.samir.hotelmanagement.ui.dashboard.MainScreen
+import com.samir.hotelmanagement.ui.hotels.HotelDetails
+import com.samir.hotelmanagement.ui.hotels.HotelList
 import com.samir.hotelmanagement.ui.login.LoginScreen
 import com.samir.hotelmanagement.ui.register.RegisterScreen
 
@@ -23,7 +25,7 @@ fun App() {
             }
         }, entryProvider = { key ->
             when (key) {
-                NavKey.Login -> NavEntry(key) {
+               is NavKey.Login -> NavEntry(key) {
                     LoginScreen(
                         onLoginSuccess = {
                             backStack.add(NavKey.Main)
@@ -35,7 +37,7 @@ fun App() {
                         onClickRegister = { backStack.add(NavKey.Register) })
                 }
 
-                NavKey.Register -> NavEntry(key) {
+                is NavKey.Register -> NavEntry(key) {
                     RegisterScreen(onBack = {
                         if (backStack.size > 1) {
                             backStack.removeAt(backStack.size - 1)
@@ -48,8 +50,20 @@ fun App() {
                     })
                 }
 
-                NavKey.Main -> NavEntry(key) {
-                    MainScreen()
+                is NavKey.Main -> NavEntry(key) {
+                    MainScreen {
+                        backStack.add(NavKey.HotelList)
+                    }
+                }
+
+                is NavKey.HotelList -> NavEntry(key) {
+                    HotelList { hotelId ->
+                        backStack.add(NavKey.HotelDetails(hotelId))
+                    }
+                }
+
+                is NavKey.HotelDetails -> NavEntry(key) {
+                    HotelDetails(key.hotelId)
                 }
             }
         })

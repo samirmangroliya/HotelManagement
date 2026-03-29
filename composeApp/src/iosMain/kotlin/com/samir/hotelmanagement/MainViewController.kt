@@ -1,7 +1,7 @@
 package com.samir.hotelmanagement
 
 import androidx.compose.ui.window.ComposeUIViewController
-import com.samir.hotelmanagement.di.initKoin
+import com.samir.di.initKoin
 
 fun MainViewController() = ComposeUIViewController(
     configure = {

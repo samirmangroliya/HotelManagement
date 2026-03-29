@@ -1,8 +1,7 @@
 package com.samir.hotelmanagement.database
 
-import com.samir.network.models.User
+import com.samir.core.User
 import org.jetbrains.exposed.sql.*
-import kotlin.Int
 
 class UserRepository {
     private fun resultRowToUser(row: ResultRow) = User(

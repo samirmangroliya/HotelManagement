@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.projects
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
@@ -21,13 +23,14 @@ dependencies {
     implementation(libs.ktor.serverNetty)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
-    
+
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.dao)
     implementation(libs.postgresql)
     implementation(libs.hikaricp)
     implementation(libs.bcrypt)
+    implementation(projects.core)
 
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)

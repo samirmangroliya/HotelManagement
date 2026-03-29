@@ -1,13 +1,15 @@
 package com.samir.hotelmanagement.routes
 
+import com.samir.core.BaseResponse
+import com.samir.core.Booking
 import com.samir.hotelmanagement.database.BookingRepository
-import com.samir.network.models.BaseResponse
-import com.samir.network.models.Booking
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 
 fun Route.bookingRouting(bookingRepository: BookingRepository) {
     route("/bookings") {
@@ -15,7 +17,7 @@ fun Route.bookingRouting(bookingRepository: BookingRepository) {
             val bookingRequest = try {
                 call.receive<Booking>()
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid request body"))
+                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid request body:: ${e.message}"))
                 return@post
             }
 

@@ -1,9 +1,8 @@
 package com.samir.hotelmanagement.database
 
-import com.samir.network.models.Hotel
-import com.samir.network.models.Room
+import com.samir.core.Hotel
+import com.samir.core.Room
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class HotelRepository {
     private fun resultRowToHotel(row: ResultRow) = Hotel(

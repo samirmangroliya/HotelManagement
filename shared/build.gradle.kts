@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -14,6 +15,7 @@ kotlin {
         }
     }
     
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
     

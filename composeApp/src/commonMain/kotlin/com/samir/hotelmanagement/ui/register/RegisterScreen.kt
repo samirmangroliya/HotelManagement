@@ -27,10 +27,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.samir.hotelmanagement.domain.state.UiState
-import com.samir.network.models.BaseResponse
-import com.samir.network.models.User
-import com.samir.hotelmanagement.viewmodels.RegisterViewModel
+import com.samir.core.BaseResponse
+import com.samir.core.User
+import com.samir.domain.state.UiState
+import com.samir.viewmodels.RegisterViewModel
 import hotelmanagement.composeapp.generated.resources.Res
 import hotelmanagement.composeapp.generated.resources.ic_arrow_back
 import kotlinx.coroutines.delay
@@ -192,13 +192,13 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterSuccess: () -> Unit = {}) 
                 Text("Register")
             }
 
-            showUIState(uiState, onRegisterSuccess)
+            ShowUIState(uiState, onRegisterSuccess)
         }
     }
 }
 
 @Composable
-fun showUIState(uiState: UiState<BaseResponse<User>>, onRegisterSuccess: () -> Unit = {}) {
+fun ShowUIState(uiState: UiState<BaseResponse<User>>, onRegisterSuccess: () -> Unit = {}) {
     when (uiState) {
 
         UiState.Loading -> {

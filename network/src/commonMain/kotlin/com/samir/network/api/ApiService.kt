@@ -1,12 +1,12 @@
 package com.samir.network.api
 
-import com.samir.network.models.BaseResponse
-import com.samir.network.models.Booking
-import com.samir.network.models.Hotel
-import com.samir.network.models.LoginRequest
-import com.samir.network.models.RegisterRequest
-import com.samir.network.models.Room
-import com.samir.network.models.User
+import com.samir.core.BaseResponse
+import com.samir.core.Booking
+import com.samir.core.Hotel
+import com.samir.core.LoginRequest
+import com.samir.core.RegisterRequest
+import com.samir.core.Room
+import com.samir.core.User
 import com.samir.network.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

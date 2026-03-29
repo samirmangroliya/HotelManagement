@@ -1,7 +1,7 @@
 package com.samir.hotelmanagement.routes
 
-import com.samir.network.models.LoginRequest
-import com.samir.network.models.RegisterRequest
+import com.samir.core.LoginRequest
+import com.samir.core.RegisterRequest
 import com.samir.hotelmanagement.service.AuthService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive

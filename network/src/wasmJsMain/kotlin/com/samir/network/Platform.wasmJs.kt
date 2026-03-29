@@ -1,3 +1,3 @@
 package com.samir.network
 
-actual fun platform() = "WasmJS"
+actual fun platform(): String = "wasmJs"

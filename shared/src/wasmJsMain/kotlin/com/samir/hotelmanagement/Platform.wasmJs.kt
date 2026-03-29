@@ -1,7 +1,7 @@
 package com.samir.hotelmanagement
 
-class WasmPlatform: Platform {
-    override val name: String = "Web with Kotlin/Wasm"
+class WasmJsPlatform : Platform {
+    override val name: String = "wasmJs"
 }
 
-actual fun getPlatform(): Platform = WasmPlatform()
+actual fun getPlatform(): Platform = WasmJsPlatform()

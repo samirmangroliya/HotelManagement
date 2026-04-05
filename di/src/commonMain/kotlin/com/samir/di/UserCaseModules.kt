@@ -1,5 +1,7 @@
 package com.samir.di
 
+import com.samir.domain.usercase.CreateBookingUseCase
+import com.samir.domain.usercase.GetRoomsUseCase
 import com.samir.domain.usercase.HotelUseCase
 import com.samir.domain.usercase.LoginUseCase
 import com.samir.domain.usercase.RegisterUseCase
@@ -10,4 +12,6 @@ val userCaseModules = module {
     factoryOf(::LoginUseCase)
     factoryOf(::RegisterUseCase)
     factoryOf(::HotelUseCase)
+    factoryOf(::GetRoomsUseCase)
+    factoryOf(::CreateBookingUseCase)
 }

@@ -74,6 +74,8 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(projects.core)
+                implementation(libs.kotlinx.datetime)
+
             }
         }
 

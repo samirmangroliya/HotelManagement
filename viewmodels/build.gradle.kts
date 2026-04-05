@@ -74,6 +74,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.kotlinx.datetime)
                 implementation(projects.domain)
                 implementation(projects.core)
                 // Add KMP dependencies here
@@ -83,6 +84,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
 

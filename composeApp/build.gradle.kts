@@ -62,6 +62,12 @@ kotlin {
             implementation(projects.viewmodels)
             implementation(projects.core)
             implementation(projects.domain)
+
+            implementation(libs.compose.icons.core)
+            implementation(libs.compose.icons.extended)
+
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

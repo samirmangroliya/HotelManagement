@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.samir.hotelmanagement.ui.topbar.TopBar
-import com.samir.viewmodels.HotelViewModel
+import com.samir.hotelmanagement.viewmodels.HotelViewModel
 import hotelmanagement.composeapp.generated.resources.Res
 import hotelmanagement.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource

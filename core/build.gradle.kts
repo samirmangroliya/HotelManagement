@@ -75,6 +75,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.napier)
             }
         }
 

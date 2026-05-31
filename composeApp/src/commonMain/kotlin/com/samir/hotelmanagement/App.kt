@@ -12,20 +12,30 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import com.samir.core.PreferenceManager
 import com.samir.hotelmanagement.navigation.NavKey
 import com.samir.hotelmanagement.navigation.goBack
+import com.samir.hotelmanagement.ui.booking.BookingListScreen
 import com.samir.hotelmanagement.ui.booking.BookingScreen
 import com.samir.hotelmanagement.ui.dashboard.MainScreen
 import com.samir.hotelmanagement.ui.hotels.HotelDetails
 import com.samir.hotelmanagement.ui.hotels.HotelList
 import com.samir.hotelmanagement.ui.login.LoginScreen
 import com.samir.hotelmanagement.ui.register.RegisterScreen
+import org.koin.compose.koinInject
 
 @Composable
 fun App() {
+    val preferenceManager = koinInject<PreferenceManager>()
+    val isLoggedIn = remember {
+        preferenceManager.getInt(PreferenceManager.KEY_USER_ID, 0) != 0
+    }
+
     MaterialTheme {
         // Navigation 3 uses a simple observable list as a back stack
-        val backStack = remember { mutableStateListOf<NavKey>(NavKey.HotelList) }
+
+        val initialScreen = if (isLoggedIn) NavKey.Main else NavKey.Login
+        val backStack = remember { mutableStateListOf<NavKey>(initialScreen) }
 
         NavDisplay(
             backStack = backStack,
@@ -75,7 +85,22 @@ fun App() {
                     }
 
                     NavKey.Main -> NavEntry(key) {
-                        MainScreen()
+                        MainScreen(
+                            onClickVisitHotels = {
+                                backStack.add(NavKey.HotelList)
+                            },
+                            onClickMyBookings = {
+                                backStack.add(NavKey.BookingList)
+                            },
+                            onLogout = {
+                                preferenceManager.clear()
+                                backStack.add(NavKey.Login)
+                                // Clear stack to Login
+                                while (backStack.size > 1) {
+                                    backStack.removeAt(0)
+                                }
+                            }
+                        )
                     }
 
                     NavKey.HotelList -> NavEntry(key) {
@@ -88,16 +113,28 @@ fun App() {
                         HotelDetails(
                             hotel = key.hotel,
                             onBack = { backStack.goBack() },
-                            onBookNow = { hotel, userId ->
-                                backStack.add(NavKey.Booking(hotel, userId))
-                            }
+                            onClickBookNow = { hotel ->
+                                backStack.add(NavKey.Booking(hotel))
+                            },
                         )
                     }
 
                     is NavKey.Booking -> NavEntry(key) {
                         BookingScreen(
                             hotel = key.hotel,
-                            userId = key.userId,
+                            onBack = { backStack.goBack() },
+                            onBookingSuccess = {
+                                backStack.add(NavKey.Main)
+                                // Clear stack up to Main
+                                while (backStack.size > 1) {
+                                    backStack.removeAt(0)
+                                }
+                            }
+                        )
+                    }
+
+                    NavKey.BookingList -> NavEntry(key) {
+                        BookingListScreen(
                             onBack = { backStack.goBack() }
                         )
                     }

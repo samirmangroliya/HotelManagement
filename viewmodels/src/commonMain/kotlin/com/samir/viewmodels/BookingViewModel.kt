@@ -3,6 +3,7 @@ package com.samir.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samir.core.Booking
+import com.samir.core.PreferenceManager
 import com.samir.core.Room
 import com.samir.domain.state.UiState
 import com.samir.domain.usercase.CreateBookingUseCase
@@ -10,14 +11,16 @@ import com.samir.domain.usercase.GetRoomsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlin.time.Instant
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 class BookingViewModel(
     private val getRoomsUseCase: GetRoomsUseCase,
-    private val createBookingUseCase: CreateBookingUseCase
+    private val createBookingUseCase: CreateBookingUseCase,
+    private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
     private val _roomsState = MutableStateFlow<UiState<List<Room>>>(UiState.Idle)
@@ -39,25 +42,25 @@ class BookingViewModel(
                     Room(5, hotelId, "105", "Single Room", 80.0)
                 )
                 
-                // You can still call the use case and use dummy as fallback or vice versa
-                // For now, we directly set the dummy data
                 _roomsState.value = UiState.Success(dummyRooms)
-                
-                /* Real implementation:
-                val response = getRoomsUseCase(hotelId)
-                if (response.success && response.data != null) {
-                    _roomsState.value = UiState.Success(response.data!!)
-                } else {
-                    _roomsState.value = UiState.Error(response.message)
-                }
-                */
             } catch (e: Exception) {
                 _roomsState.value = UiState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
 
-    fun bookRoom(booking: Booking) {
+    fun bookRoom(room: Room, checkIn: Long, checkOut: Long) {
+        val userId = preferenceManager.getInt(PreferenceManager.KEY_USER_ID, 0)
+
+        val booking = Booking(
+            id = 0,
+            userId = userId,
+            roomId = room.id,
+            checkInDate = checkIn.toString(),
+            checkOutDate = checkOut.toString(),
+            totalPrice = room.pricePerNight * 2,
+            status = "Pending"
+        )
         viewModelScope.launch {
             _bookingState.value = UiState.Loading
             try {
@@ -75,16 +78,24 @@ class BookingViewModel(
 
     fun formatDateRange(start: Long?, end: Long?): String {
         if (start == null) return "Select check in date"
-        val startStr = toFormattedDate(start)
+        val startStr = start.toLocalDate().format()
         if (end == null) return "Select check out date"
-        return "$startStr - ${toFormattedDate(end)}"
+        return "$startStr - ${end.toLocalDate().format()}"
     }
 
-    private fun toFormattedDate(millis: Long): String {
-        val instant = Instant.fromEpochMilliseconds(millis)
-        val date = instant.toLocalDateTime(TimeZone.UTC).date
-        val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-        return "${date.day} ${monthNames[date.month.number - 1]}"
-    }
+}
 
+fun Long.toLocalDate(): LocalDate {
+    return Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+}
+
+fun String.toLocalDate(): LocalDate {
+    return toLong().toLocalDate()
+}
+
+fun LocalDate.format(): String {
+    val dayStr = day.toString().padStart(2, '0')
+    val monthStr = month.number.toString().padStart(2, '0')
+    return "$dayStr/$monthStr/$year"
 }

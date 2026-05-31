@@ -9,7 +9,8 @@ sealed interface NavKey {
     data object Main: NavKey
     data object HotelList: NavKey
     data class HotelDetails(val hotel: Hotel): NavKey
-    data class Booking(val hotel: Hotel, val userId: Int): NavKey
+    data class Booking(val hotel: Hotel): NavKey
+    data object BookingList: NavKey
 }
 
 fun MutableList<NavKey>.goBack() {

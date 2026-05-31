@@ -70,6 +70,7 @@ kotlin {
             implementation(libs.coil.network.ktor)
             
             implementation(libs.napier)
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

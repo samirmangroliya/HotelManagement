@@ -2,6 +2,7 @@ package com.samir.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.samir.core.BaseResponse
 import com.samir.core.Booking
 import com.samir.core.PreferenceManager
 import com.samir.core.Room
@@ -18,7 +19,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 class BookingViewModel(
-    private val getRoomsUseCase: GetRoomsUseCase,
+    private val roomUsecase: GetRoomsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val preferenceManager: PreferenceManager
 ) : ViewModel() {
@@ -33,18 +34,27 @@ class BookingViewModel(
         viewModelScope.launch {
             _roomsState.value = UiState.Loading
             try {
-                // Using dummy data as requested
-                val dummyRooms = listOf(
-                    Room(1, hotelId, "101", "Standard Room", 100.0),
-                    Room(2, hotelId, "102", "Deluxe Room", 180.0),
-                    Room(3, hotelId, "201", "Executive Suite", 300.0),
-                    Room(4, hotelId, "301", "Presidential Suite", 550.0),
-                    Room(5, hotelId, "105", "Single Room", 80.0)
-                )
-                
-                _roomsState.value = UiState.Success(dummyRooms)
+                val rooms = roomUsecase.invoke(hotelId)
+                if(rooms.data?.isNotEmpty() == true) {
+                    val roomsResponse = BaseResponse(
+                        success = true,
+                        message = "Rooms fetched successfully",
+                        data = rooms
+                    )
+                    _roomsState.value = UiState.Success(roomsResponse)
+                } else {
+                    val roomsResponse = BaseResponse(
+                        success = false,
+                        message = "No Rooms found....",
+                        data = null
+                    )
+                    _roomsState.value = UiState.Success(roomsResponse)
+                }
+
+
             } catch (e: Exception) {
-                _roomsState.value = UiState.Error(e.message ?: "Unknown error occurred")
+                _roomsState.value =
+                    UiState.Error(e.message ?: "Unknown error, Try Again Later...")
             }
         }
     }

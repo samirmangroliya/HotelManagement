@@ -28,23 +28,7 @@ class HotelViewModel(
          _uiState.value = UiState.Loading
          try {
             val hotels = hotelUseCase.invoke()
-            if(hotels.data?.isNotEmpty() == true) {
-               val hotelResponse = BaseResponse(
-                  success = true,
-                  message = "Hotels fetched successfully",
-                  data = hotels
-               )
-               _uiState.value = UiState.Success(hotelResponse)
-            } else {
-               val hotelResponse = BaseResponse(
-                  success = false,
-                  message = "No Hotels found....",
-                  data = null
-               )
-               _uiState.value = UiState.Success(hotelResponse)
-            }
-
-
+            _uiState.value = UiState.Success(hotels)
          } catch (e: Exception) {
             _uiState.value =
                UiState.Error(e.message ?: "Unknown error, Try Again Later...")

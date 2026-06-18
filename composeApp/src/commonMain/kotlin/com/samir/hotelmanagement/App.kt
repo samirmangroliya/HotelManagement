@@ -125,8 +125,9 @@ fun App() {
                             onBack = { backStack.goBack() },
                             onBookingSuccess = {
                                 backStack.add(NavKey.Main)
-                                // Clear stack up to Main
-                                while (backStack.size > 1) {
+                                backStack.add(NavKey.BookingList)
+                                // Clear stack up to Main and BookingList
+                                while (backStack.size > 2) {
                                     backStack.removeAt(0)
                                 }
                             }

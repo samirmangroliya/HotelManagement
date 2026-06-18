@@ -14,7 +14,8 @@ class BookingRepository {
         checkInDate = row[Bookings.checkInDate],
         checkOutDate = row[Bookings.checkOutDate],
         totalPrice = row[Bookings.totalPrice],
-        status = row[Bookings.status]
+        status = row[Bookings.status],
+        totalDay = row[Bookings.totalDays]
     )
 
     suspend fun createBooking(
@@ -22,7 +23,8 @@ class BookingRepository {
         roomId: Int,
         checkInDate: String,
         checkOutDate: String,
-        totalPrice: Double
+        totalPrice: Double,
+        totalDays: Int
     ): Booking? = DatabaseFactory.dbQuery {
         val insertStatement = Bookings.insert {
             it[Bookings.userId] = userId
@@ -30,6 +32,7 @@ class BookingRepository {
             it[Bookings.checkInDate] = checkInDate
             it[Bookings.checkOutDate] = checkOutDate
             it[Bookings.totalPrice] = totalPrice
+            it[Bookings.totalDays] = totalDays
             it[Bookings.status] = "CONFIRMED"
         }
 

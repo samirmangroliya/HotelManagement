@@ -526,5 +526,7 @@ object Bookings : Table("bookings") {
     val totalPrice = double("total_price")
     val status = varchar("status", 50).default("PENDING")
 
+    val totalDays = integer("total_days")
+
     override val primaryKey = PrimaryKey(id)
 }

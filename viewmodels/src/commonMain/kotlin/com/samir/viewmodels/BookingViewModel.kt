@@ -2,7 +2,6 @@ package com.samir.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samir.core.BaseResponse
 import com.samir.core.Booking
 import com.samir.core.PreferenceManager
 import com.samir.core.Room
@@ -11,6 +10,7 @@ import com.samir.domain.usercase.CreateBookingUseCase
 import com.samir.domain.usercase.GetRoomsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -32,35 +32,27 @@ class BookingViewModel(
 
     fun fetchRooms(hotelId: Int) {
         viewModelScope.launch {
-            _roomsState.value = UiState.Loading
+            _roomsState.update { UiState.Loading }
             try {
                 val rooms = roomUsecase.invoke(hotelId)
                 if(rooms.data?.isNotEmpty() == true) {
-                    val roomsResponse = BaseResponse(
-                        success = true,
-                        message = "Rooms fetched successfully",
-                        data = rooms
-                    )
-                    _roomsState.value = UiState.Success(roomsResponse)
+                    _roomsState.update { UiState.Success(rooms.data ?: emptyList()) }
                 } else {
-                    val roomsResponse = BaseResponse(
-                        success = false,
-                        message = "No Rooms found....",
-                        data = null
-                    )
-                    _roomsState.value = UiState.Success(roomsResponse)
+                    _roomsState.update { UiState.Success(emptyList()) }
                 }
-
-
             } catch (e: Exception) {
-                _roomsState.value =
+                _roomsState.update {
                     UiState.Error(e.message ?: "Unknown error, Try Again Later...")
+                }
             }
         }
     }
 
     fun bookRoom(room: Room, checkIn: Long, checkOut: Long) {
         val userId = preferenceManager.getInt(PreferenceManager.KEY_USER_ID, 0)
+        val totalDays = if (checkIn != null && checkOut != null) {
+            ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).coerceAtLeast(1)
+        } else 1
 
         val booking = Booking(
             id = 0,
@@ -68,20 +60,21 @@ class BookingViewModel(
             roomId = room.id,
             checkInDate = checkIn.toString(),
             checkOutDate = checkOut.toString(),
-            totalPrice = room.pricePerNight * 2,
+            totalPrice = room.pricePerNight *totalDays,
+            totalDay = totalDays.toInt(),
             status = "Pending"
         )
         viewModelScope.launch {
-            _bookingState.value = UiState.Loading
+            _bookingState.update { UiState.Loading }
             try {
                 val response = createBookingUseCase(booking)
                 if (response.success && response.data != null) {
-                    _bookingState.value = UiState.Success(response.data!!)
+                    _bookingState.update { UiState.Success(response.data!!) }
                 } else {
-                    _bookingState.value = UiState.Error(response.message)
+                    _bookingState.update { UiState.Error(response.message) }
                 }
             } catch (e: Exception) {
-                _bookingState.value = UiState.Error(e.message ?: "Unknown error occurred")
+                _bookingState.update { UiState.Error(e.message ?: "Unknown error occurred") }
             }
         }
     }

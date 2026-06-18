@@ -26,7 +26,8 @@ fun Route.bookingRouting(bookingRepository: BookingRepository) {
                 roomId = bookingRequest.roomId,
                 checkInDate = bookingRequest.checkInDate,
                 checkOutDate = bookingRequest.checkOutDate,
-                totalPrice = bookingRequest.totalPrice
+                totalPrice = bookingRequest.totalPrice,
+                totalDays = bookingRequest.totalDay
             )
 
             if (booking != null) {

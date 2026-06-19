@@ -23,7 +23,7 @@ class HotelRepository {
     )
 
     suspend fun getAllHotels(): List<Hotel> = DatabaseFactory.dbQuery {
-        Hotels.selectAll().map(::resultRowToHotel)
+        Hotels.selectAll().orderBy(Hotels.id to SortOrder.DESC).map(::resultRowToHotel)
     }
 
     suspend fun getHotelById(id: Int): Hotel? = DatabaseFactory.dbQuery {

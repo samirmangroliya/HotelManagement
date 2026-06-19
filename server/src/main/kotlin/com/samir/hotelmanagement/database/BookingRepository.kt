@@ -2,6 +2,7 @@ package com.samir.hotelmanagement.database
 
 import com.samir.core.Booking
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
@@ -46,12 +47,14 @@ class BookingRepository {
 
     suspend fun getBookingsByUserId(userId: Int): List<Booking> = DatabaseFactory.dbQuery {
         Bookings.selectAll().where { Bookings.userId eq userId }
+            .orderBy(Bookings.id to SortOrder.DESC)
             .map(::resultRowToBooking)
     }
 
     suspend fun getBookingsByHotelId(hotelId: Int): List<Booking> = DatabaseFactory.dbQuery {
         (Bookings innerJoin Rooms)
             .selectAll().where { Rooms.hotelId eq hotelId }
+            .orderBy(Bookings.id to SortOrder.DESC)
             .map(::resultRowToBooking)
     }
 }

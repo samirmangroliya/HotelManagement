@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.samir.core.Booking
 import com.samir.domain.state.UiState
+import com.samir.hotelmanagement.theme.AppColors
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingListViewModel
 import com.samir.viewmodels.format
@@ -95,9 +96,9 @@ fun BookingItem(booking: Booking) {
                 Text(
                     text = booking.status,
                     color = when (booking.status) {
-                        "Confirmed" -> MaterialTheme.colorScheme.inversePrimary
-                        "Pending" -> MaterialTheme.colorScheme.secondary
-                        else -> MaterialTheme.colorScheme.error
+                        "Confirmed".uppercase() -> AppColors.Success
+                        "Pending".uppercase() -> AppColors.Warning
+                        else -> AppColors.Error
                     },
                     style = MaterialTheme.typography.labelLarge
                 )

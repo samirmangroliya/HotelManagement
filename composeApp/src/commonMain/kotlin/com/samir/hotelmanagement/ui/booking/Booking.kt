@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -71,6 +72,7 @@ fun BookingScreen(
 
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
     val dateRangePickerState = rememberDateRangePickerState()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -82,8 +84,7 @@ fun BookingScreen(
     LaunchedEffect(bookingState) {
         when (bookingState) {
             is UiState.Success -> {
-                snackbarHostState.showSnackbar("Booking Successful!")
-                onBookingSuccess()
+                showSuccessDialog = true
             }
             is UiState.Error -> {
                 snackbarHostState.showSnackbar("Booking Failed: ${(bookingState as UiState.Error).message}")
@@ -168,6 +169,24 @@ fun BookingScreen(
             }
             
             Spacer(modifier = Modifier.height(100.dp))
+        }
+
+        if (showSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text("Booking Successful") },
+                text = { Text("Your booking for ${hotel.name} has been confirmed.") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showSuccessDialog = false
+                            onBookingSuccess()
+                        }
+                    ) {
+                        Text("View My Bookings")
+                    }
+                }
+            )
         }
 
         if (showDatePicker) {

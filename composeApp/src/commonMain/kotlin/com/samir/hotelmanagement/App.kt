@@ -124,12 +124,8 @@ fun App() {
                             hotel = key.hotel,
                             onBack = { backStack.goBack() },
                             onBookingSuccess = {
-                                backStack.add(NavKey.Main)
+                                backStack.removeAll { it !is NavKey.Main }
                                 backStack.add(NavKey.BookingList)
-                                // Clear stack up to Main and BookingList
-                                while (backStack.size > 2) {
-                                    backStack.removeAt(0)
-                                }
                             }
                         )
                     }

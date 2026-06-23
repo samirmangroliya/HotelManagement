@@ -14,4 +14,8 @@ class HotelRepositoryImpl(private val apiService: ApiService): HotelRepository {
     override suspend fun getRooms(hotelId: Int): BaseResponse<List<Room>> {
         return apiService.getRooms(hotelId)
     }
+
+    override suspend fun getHotelById(hotelId: Int): BaseResponse<Hotel> {
+        return apiService.getHotelById(hotelId)
+    }
 }

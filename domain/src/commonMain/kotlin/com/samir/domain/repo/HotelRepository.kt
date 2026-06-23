@@ -9,4 +9,6 @@ interface HotelRepository {
    suspend fun getHotels(): BaseResponse<List<Hotel>>
 
    suspend fun getRooms(hotelId: Int): BaseResponse<List<Room>>
+
+   suspend fun getHotelById(hotelId: Int): BaseResponse<Hotel>
 }

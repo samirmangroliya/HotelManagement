@@ -1,8 +1,12 @@
 package com.samir.hotelmanagement.ui.booking
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +25,7 @@ import org.koin.compose.koinInject
 @Composable
 fun BookingListScreen(
     onBack: () -> Unit,
+    onClickBookingDetails: (Booking) -> Unit,
     viewModel: BookingListViewModel = koinInject()
 ) {
     val bookingsState by viewModel.bookingsState.collectAsState()
@@ -55,11 +60,13 @@ fun BookingListScreen(
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
+                            contentPadding = PaddingValues(8.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(bookings) { booking ->
-                                BookingItem(booking)
+                                BookingItem(booking) {
+                                    onClickBookingDetails(it)
+                                }
                             }
                         }
                     }
@@ -78,18 +85,20 @@ fun BookingListScreen(
 }
 
 @Composable
-fun BookingItem(booking: Booking) {
+fun BookingItem(booking: Booking, onClickBookingDetails:(Booking) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clickable{
+            onClickBookingDetails(booking)
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Booking #${booking.id}",
+                    text = "Booking No. ${booking.id}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -101,6 +110,13 @@ fun BookingItem(booking: Booking) {
                         else -> AppColors.Error
                     },
                     style = MaterialTheme.typography.labelLarge
+                )
+                Image(
+                    imageVector = Icons.Default.ArrowCircleRight,
+                    contentDescription = "Navigate",
+                    modifier = Modifier.size(24.dp).clickable {
+                        onClickBookingDetails(booking)
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))

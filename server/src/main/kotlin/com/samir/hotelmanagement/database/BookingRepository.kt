@@ -12,6 +12,7 @@ class BookingRepository {
         id = row[Bookings.id],
         userId = row[Bookings.userId],
         roomId = row[Bookings.roomId],
+        hotelId= row[Bookings.hotelId],
         checkInDate = row[Bookings.checkInDate],
         checkOutDate = row[Bookings.checkOutDate],
         totalPrice = row[Bookings.totalPrice],

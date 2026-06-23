@@ -110,7 +110,7 @@ fun BookingScreen(
                         val checkIn = dateRangePickerState.selectedStartDateMillis ?: return@BookingBottomBar
                         val checkOut = dateRangePickerState.selectedEndDateMillis ?: return@BookingBottomBar
 
-                        viewModel.bookRoom(room, checkIn, checkOut)
+                        viewModel.bookRoom(hotel.id, room, checkIn, checkOut)
                     },
                     isLoading = bookingState is UiState.Loading
                 )

@@ -11,6 +11,7 @@ sealed interface NavKey {
     data class HotelDetails(val hotel: Hotel): NavKey
     data class Booking(val hotel: Hotel): NavKey
     data object BookingList: NavKey
+    data class BookingDetails(val booking: com.samir.core.Booking): NavKey
 }
 
 fun MutableList<NavKey>.goBack() {

@@ -15,6 +15,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.samir.core.PreferenceManager
 import com.samir.hotelmanagement.navigation.NavKey
 import com.samir.hotelmanagement.navigation.goBack
+import com.samir.hotelmanagement.ui.booking.BookingDetails
 import com.samir.hotelmanagement.ui.booking.BookingListScreen
 import com.samir.hotelmanagement.ui.booking.BookingScreen
 import com.samir.hotelmanagement.ui.dashboard.MainScreen
@@ -132,8 +133,18 @@ fun App() {
 
                     NavKey.BookingList -> NavEntry(key) {
                         BookingListScreen(
-                            onBack = { backStack.goBack() }
+                            onBack = { backStack.goBack() },
+                            onClickBookingDetails = {
+                                backStack.add(NavKey.BookingDetails(it))
+                            }
                         )
+                    }
+
+                   is NavKey.BookingDetails -> NavEntry(key) {
+                       BookingDetails(
+                           key.booking,
+                           onBack = { backStack.goBack() },
+                       )
                     }
                 }
             })

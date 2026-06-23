@@ -48,7 +48,7 @@ class BookingViewModel(
         }
     }
 
-    fun bookRoom(room: Room, checkIn: Long, checkOut: Long) {
+    fun bookRoom(hotelId: Int, room: Room, checkIn: Long, checkOut: Long) {
         val userId = preferenceManager.getInt(PreferenceManager.KEY_USER_ID, 0)
         val totalDays = if (checkIn != null && checkOut != null) {
             ((checkOut - checkIn) / (1000 * 60 * 60 * 24)).coerceAtLeast(1)
@@ -58,6 +58,7 @@ class BookingViewModel(
             id = 0,
             userId = userId,
             roomId = room.id,
+            hotelId = hotelId,
             checkInDate = checkIn.toString(),
             checkOutDate = checkOut.toString(),
             totalPrice = room.pricePerNight *totalDays,

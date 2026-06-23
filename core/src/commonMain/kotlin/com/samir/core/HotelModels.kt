@@ -26,6 +26,7 @@ data class Booking(
     val id: Int,
     val userId: Int,
     val roomId: Int,
+    val hotelId:Int,
     val totalDay: Int,
     val checkInDate: String,
     val checkOutDate: String,

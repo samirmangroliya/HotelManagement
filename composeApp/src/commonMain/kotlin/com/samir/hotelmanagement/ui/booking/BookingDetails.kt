@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.samir.core.Booking
+import com.samir.core.format
+import com.samir.core.toLocalDate
 import com.samir.domain.state.UiState
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingDetailsViewModel
-import com.samir.viewmodels.format
-import com.samir.viewmodels.toLocalDate
 import org.koin.compose.koinInject
 
 @Composable

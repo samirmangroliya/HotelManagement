@@ -75,6 +75,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.ktor.serialization.kotlinx.json)
+                api(libs.kotlinx.datetime)
                 implementation(libs.napier)
                 implementation(libs.koin.core)
             }

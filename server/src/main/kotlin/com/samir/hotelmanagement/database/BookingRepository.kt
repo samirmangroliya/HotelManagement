@@ -1,12 +1,7 @@
 package com.samir.hotelmanagement.database
 
 import com.samir.core.Booking
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
-
+import org.jetbrains.exposed.sql.*
 class BookingRepository {
     private fun resultRowToBooking(row: ResultRow) = Booking(
         id = row[Bookings.id],
@@ -23,14 +18,28 @@ class BookingRepository {
     suspend fun createBooking(
         userId: Int,
         roomId: Int,
+        hotelId: Int,
         checkInDate: String,
         checkOutDate: String,
         totalPrice: Double,
         totalDays: Int
-    ): Booking? = DatabaseFactory.dbQuery {
+    ): BookingResult = DatabaseFactory.dbQuery {
+        // Check for overlapping bookings
+        val overlapping = Bookings.selectAll().where {
+            (Bookings.roomId eq roomId) and
+            (Bookings.checkInDate less checkOutDate) and
+            (Bookings.checkOutDate greater checkInDate) and
+            (Bookings.status eq "CONFIRMED")
+        }.firstOrNull()
+
+        if (overlapping != null) {
+            return@dbQuery BookingResult.Conflict(resultRowToBooking(overlapping))
+        }
+
         val insertStatement = Bookings.insert {
             it[Bookings.userId] = userId
             it[Bookings.roomId] = roomId
+            it[Bookings.hotelId] = hotelId
             it[Bookings.checkInDate] = checkInDate
             it[Bookings.checkOutDate] = checkOutDate
             it[Bookings.totalPrice] = totalPrice
@@ -38,12 +47,17 @@ class BookingRepository {
             it[Bookings.status] = "CONFIRMED"
         }
 
-        // Also mark the room as unavailable
+        // Also mark the room as unavailable (Global status, though date check is more precise)
         Rooms.update({ Rooms.id eq roomId }) {
             it[Rooms.isAvailable] = false
         }
 
-        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToBooking)
+        val newBooking = insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToBooking)
+        if (newBooking != null) {
+            BookingResult.Success(newBooking)
+        } else {
+            BookingResult.Error("Failed to create booking")
+        }
     }
 
     suspend fun getBookingsByUserId(userId: Int): List<Booking> = DatabaseFactory.dbQuery {

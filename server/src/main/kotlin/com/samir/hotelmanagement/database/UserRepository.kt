@@ -1,7 +1,10 @@
 package com.samir.hotelmanagement.database
 
 import com.samir.core.User
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 
 class UserRepository {
     private fun resultRowToUser(row: ResultRow) = User(

@@ -48,15 +48,12 @@ import com.samir.core.Hotel
 import com.samir.domain.state.UiState
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.hotelmanagement.viewmodels.HotelViewModel
-import hotelmanagement.composeapp.generated.resources.Res
-import hotelmanagement.composeapp.generated.resources.app_name
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HotelList(onHotelClick: (Hotel) -> Unit = {}) {
+fun HotelList(onHotelClick: (Hotel) -> Unit = {}, onBack:() -> Unit) {
     val hotelViewModel: HotelViewModel = koinInject()
     val uiState by hotelViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -66,7 +63,10 @@ fun HotelList(onHotelClick: (Hotel) -> Unit = {}) {
     }
 
     Scaffold(
-        topBar = { TopBar(stringResource(Res.string.app_name)) }
+        topBar = { TopBar(
+            title = "Hotel List",
+            onBackClick = onBack
+        ) }
     ) { innerPadding ->
         Box(
             modifier = Modifier

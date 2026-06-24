@@ -1,19 +1,28 @@
 package com.samir.hotelmanagement.database
 
 import com.samir.core.Booking
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.update
+
 class BookingRepository {
-    private fun resultRowToBooking(row: ResultRow) = Booking(
-        id = row[Bookings.id],
-        userId = row[Bookings.userId],
-        roomId = row[Bookings.roomId],
-        hotelId= row[Bookings.hotelId],
-        checkInDate = row[Bookings.checkInDate],
-        checkOutDate = row[Bookings.checkOutDate],
-        totalPrice = row[Bookings.totalPrice],
-        status = row[Bookings.status],
-        totalDay = row[Bookings.totalDays]
-    )
+
+    private fun resultRowToBooking(row: ResultRow): Booking =
+        Booking(
+            id = row[Bookings.id],
+            userId = row[Bookings.userId],
+            roomId = row[Bookings.roomId],
+            hotelId = row[Bookings.hotelId],
+            checkInDate = row[Bookings.checkInDate],
+            checkOutDate = row[Bookings.checkOutDate],
+            totalPrice = row[Bookings.totalPrice],
+            totalDay = row[Bookings.totalDays],
+            status = row[Bookings.status]
+        )
 
     suspend fun createBooking(
         userId: Int,
@@ -24,19 +33,22 @@ class BookingRepository {
         totalPrice: Double,
         totalDays: Int
     ): BookingResult = DatabaseFactory.dbQuery {
-        // Check for overlapping bookings
-        val overlapping = Bookings.selectAll().where {
-            (Bookings.roomId eq roomId) and
-            (Bookings.checkInDate less checkOutDate) and
-            (Bookings.checkOutDate greater checkInDate) and
-            (Bookings.status eq "CONFIRMED")
-        }.firstOrNull()
 
-        if (overlapping != null) {
-            return@dbQuery BookingResult.Conflict(resultRowToBooking(overlapping))
+        val existingBooking = Bookings
+            .selectAll()
+            .where {
+                (Bookings.roomId eq roomId) and
+                        (Bookings.status eq "Confirmed")
+            }
+            .firstOrNull()
+
+        if (existingBooking != null) {
+            return@dbQuery BookingResult.Conflict(
+                resultRowToBooking(existingBooking)
+            )
         }
 
-        val insertStatement = Bookings.insert {
+        Bookings.insert {
             it[Bookings.userId] = userId
             it[Bookings.roomId] = roomId
             it[Bookings.hotelId] = hotelId
@@ -44,31 +56,52 @@ class BookingRepository {
             it[Bookings.checkOutDate] = checkOutDate
             it[Bookings.totalPrice] = totalPrice
             it[Bookings.totalDays] = totalDays
-            it[Bookings.status] = "CONFIRMED"
+            it[Bookings.status] = "Confirmed"
         }
 
-        // Also mark the room as unavailable (Global status, though date check is more precise)
         Rooms.update({ Rooms.id eq roomId }) {
-            it[Rooms.isAvailable] = false
+            it[isAvailable] = false
         }
 
-        val newBooking = insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToBooking)
-        if (newBooking != null) {
-            BookingResult.Success(newBooking)
+        val booking = Bookings
+            .selectAll()
+            .where {
+                (Bookings.userId eq userId) and
+                        (Bookings.roomId eq roomId)
+            }
+            .orderBy(Bookings.id to SortOrder.DESC)
+            .firstOrNull()
+            ?.let(::resultRowToBooking)
+
+        if (booking != null) {
+            BookingResult.Success(booking)
         } else {
             BookingResult.Error("Failed to create booking")
         }
     }
 
-    suspend fun getBookingsByUserId(userId: Int): List<Booking> = DatabaseFactory.dbQuery {
-        Bookings.selectAll().where { Bookings.userId eq userId }
+    suspend fun getBookingsByUserId(
+        userId: Int
+    ): List<Booking> = DatabaseFactory.dbQuery {
+
+        Bookings
+            .selectAll()
+            .where {
+                Bookings.userId eq userId
+            }
             .orderBy(Bookings.id to SortOrder.DESC)
             .map(::resultRowToBooking)
     }
 
-    suspend fun getBookingsByHotelId(hotelId: Int): List<Booking> = DatabaseFactory.dbQuery {
-        (Bookings innerJoin Rooms)
-            .selectAll().where { Rooms.hotelId eq hotelId }
+    suspend fun getBookingsByHotelId(
+        hotelId: Int
+    ): List<Booking> = DatabaseFactory.dbQuery {
+
+        Bookings
+            .selectAll()
+            .where {
+                Bookings.hotelId eq hotelId
+            }
             .orderBy(Bookings.id to SortOrder.DESC)
             .map(::resultRowToBooking)
     }

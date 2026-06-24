@@ -105,8 +105,10 @@ fun App() {
                     }
 
                     NavKey.HotelList -> NavEntry(key) {
-                        HotelList { hotel ->
+                        HotelList({ hotel ->
                             backStack.add(NavKey.HotelDetails(hotel))
+                        }) {
+                            backStack.goBack()
                         }
                     }
 
@@ -140,11 +142,11 @@ fun App() {
                         )
                     }
 
-                   is NavKey.BookingDetails -> NavEntry(key) {
-                       BookingDetails(
-                           key.booking,
-                           onBack = { backStack.goBack() },
-                       )
+                    is NavKey.BookingDetails -> NavEntry(key) {
+                        BookingDetails(
+                            key.booking,
+                            onBack = { backStack.goBack() },
+                        )
                     }
                 }
             })

@@ -1,5 +1,9 @@
 package com.samir.hotelmanagement.database
 
+import com.samir.hotelmanagement.tables.Bookings
+import com.samir.hotelmanagement.tables.Hotels
+import com.samir.hotelmanagement.tables.Rooms
+import com.samir.hotelmanagement.tables.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers

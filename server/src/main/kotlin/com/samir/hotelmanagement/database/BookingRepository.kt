@@ -1,6 +1,7 @@
 package com.samir.hotelmanagement.database
 
 import com.samir.core.Booking
+import com.samir.hotelmanagement.tables.Bookings
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and

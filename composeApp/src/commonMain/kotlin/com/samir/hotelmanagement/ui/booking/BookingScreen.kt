@@ -265,7 +265,7 @@ fun RoomCard(room: Room, isSelected: Boolean, onSelect: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(13.dp)) {
             Text(room.type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, fontSize = 16.sp)
-            Text("$${room.pricePerNight} per day", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Green)
+            Text("$${room.pricePerNight} per day", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Gray)
         }
     }
 }

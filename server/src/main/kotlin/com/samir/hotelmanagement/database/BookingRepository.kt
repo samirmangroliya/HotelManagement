@@ -38,7 +38,7 @@ class BookingRepository {
             .selectAll()
             .where {
                 (Bookings.roomId eq roomId) and
-                        (Bookings.status eq "Confirmed")
+                        (Bookings.status eq "CONFIRMED")
             }
             .firstOrNull()
 
@@ -56,7 +56,7 @@ class BookingRepository {
             it[Bookings.checkOutDate] = checkOutDate
             it[Bookings.totalPrice] = totalPrice
             it[Bookings.totalDays] = totalDays
-            it[Bookings.status] = "Confirmed"
+            it[Bookings.status] = "CONFIRMED"
         }
 
         Rooms.update({ Rooms.id eq roomId }) {

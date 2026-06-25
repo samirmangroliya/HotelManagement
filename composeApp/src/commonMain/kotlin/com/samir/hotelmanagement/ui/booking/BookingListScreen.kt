@@ -104,9 +104,9 @@ fun BookingItem(booking: Booking, onClickBookingDetails:(Booking) -> Unit) {
                 )
                 Text(
                     text = booking.status,
-                    color = when (booking.status) {
-                        "Confirmed".uppercase() -> AppColors.Success
-                        "Pending".uppercase() -> AppColors.Warning
+                    color = when {
+                        booking.status.equals("confirmed", ignoreCase = true) -> AppColors.Success
+                        booking.status.equals("pending", ignoreCase = true) -> AppColors.Warning
                         else -> AppColors.Error
                     },
                     style = MaterialTheme.typography.labelLarge

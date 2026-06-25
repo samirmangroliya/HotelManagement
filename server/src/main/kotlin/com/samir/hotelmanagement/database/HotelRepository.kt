@@ -22,12 +22,11 @@ class HotelRepository {
         hotelId = row[Rooms.hotelId],
         roomNumber = row[Rooms.roomNumber],
         type = row[Rooms.type],
-        pricePerNight = row[Rooms.pricePerNight],
-        isAvailable = row[Rooms.isAvailable]
+        pricePerNight = row[Rooms.pricePerNight]
     )
 
     suspend fun getAllHotels(): List<Hotel> = DatabaseFactory.dbQuery {
-        Hotels.selectAll().orderBy(Hotels.id to SortOrder.DESC).map(::resultRowToHotel)
+        Hotels.selectAll().orderBy(Hotels.id to SortOrder.ASC).map(::resultRowToHotel)
     }
 
     suspend fun getHotelById(id: Int): Hotel? = DatabaseFactory.dbQuery {
@@ -37,8 +36,15 @@ class HotelRepository {
     }
 
     suspend fun getRoomsByHotelId(hotelId: Int): List<Room> = DatabaseFactory.dbQuery {
-        Rooms.selectAll().where { Rooms.hotelId eq hotelId }
+        Rooms
+            .selectAll()
+            .where { Rooms.hotelId eq hotelId }
+            .orderBy(Rooms.roomNumber to SortOrder.DESC)
             .map(::resultRowToRoom)
+            .groupBy { it.type }
+            .map { (_, rooms) ->
+                rooms.first()
+            }
     }
 
     suspend fun createHotel(name: String, location: String, description: String, imageUrl: String?): Hotel? = DatabaseFactory.dbQuery {
@@ -57,7 +63,6 @@ class HotelRepository {
             it[Rooms.roomNumber] = roomNumber
             it[Rooms.type] = type
             it[Rooms.pricePerNight] = pricePerNight
-            it[Rooms.isAvailable] = true
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToRoom)
     }

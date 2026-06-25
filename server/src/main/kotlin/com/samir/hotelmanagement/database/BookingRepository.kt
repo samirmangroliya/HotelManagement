@@ -3,11 +3,10 @@ package com.samir.hotelmanagement.database
 import com.samir.core.Booking
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
-import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
 
 class BookingRepository {
 
@@ -57,10 +56,6 @@ class BookingRepository {
             it[Bookings.totalPrice] = totalPrice
             it[Bookings.totalDays] = totalDays
             it[Bookings.status] = "CONFIRMED"
-        }
-
-        Rooms.update({ Rooms.id eq roomId }) {
-            it[isAvailable] = false
         }
 
         val booking = Bookings

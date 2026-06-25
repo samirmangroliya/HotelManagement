@@ -1,5 +1,6 @@
  package com.samir.hotelmanagement.ui.booking
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,9 +53,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.samir.core.Hotel
 import com.samir.core.Room
 import com.samir.domain.state.UiState
+import com.samir.hotelmanagement.theme.AppColors
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingViewModel
 import org.koin.compose.koinInject
@@ -208,12 +211,27 @@ fun BookingScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionCard(state: DateRangePickerState, viewModel: BookingViewModel, onClick: () -> Unit) {
+    val isDateRangeSelected =
+        state.selectedStartDateMillis != null &&
+                state.selectedEndDateMillis != null
+
     Card(
         modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            .clickable(onClick = onClick),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isDateRangeSelected) {
+                AppColors.Success
+            } else {
+                AppColors.Error
+            }
+        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -245,14 +263,9 @@ fun RoomCard(room: Room, isSelected: Boolean, onSelect: () -> Unit) {
             .clickable { onSelect() },
         colors = CardDefaults.cardColors(containerColor = containerColor)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(room.type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Text("$${room.pricePerNight}/night", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(if (room.isAvailable) "Available" else "Booked", 
-                style = MaterialTheme.typography.labelSmall,
-                color = if (room.isAvailable) Color(0xFF4CAF50) else Color.Red
-            )
+        Column(modifier = Modifier.padding(13.dp)) {
+            Text(room.type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, fontSize = 16.sp)
+            Text("$${room.pricePerNight} per day", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Green)
         }
     }
 }

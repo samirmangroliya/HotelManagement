@@ -50,9 +50,6 @@ object Rooms : Table("rooms") {
 
     val pricePerNight = double("price_per_night")
 
-    val isAvailable = bool("is_available")
-        .default(true)
-
     override val primaryKey = PrimaryKey(id)
 }
 

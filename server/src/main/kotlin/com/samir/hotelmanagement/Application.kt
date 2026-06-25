@@ -7,6 +7,7 @@ import com.samir.hotelmanagement.database.UserRepository
 import com.samir.hotelmanagement.routes.authRouting
 import com.samir.hotelmanagement.routes.bookingRouting
 import com.samir.hotelmanagement.routes.hotelRouting
+import com.samir.hotelmanagement.routes.roomRouting
 import com.samir.hotelmanagement.service.AuthService
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -42,9 +43,12 @@ fun Application.module() {
         
         // Register Auth Routes
         authRouting(authService)
-        // Register Hotel Routes
+        // Hotel Routes
         hotelRouting(hotelRepository)
-        // Register Booking Routes
+        // Hotel Routes
+        roomRouting(hotelRepository)
+        // Booking Routes
         bookingRouting(bookingRepository)
+
     }
 }

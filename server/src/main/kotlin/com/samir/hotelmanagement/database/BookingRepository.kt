@@ -33,17 +33,26 @@ class BookingRepository {
         totalDays: Int
     ): BookingResult = DatabaseFactory.dbQuery {
 
-        val existingBooking = Bookings
+        val requestedCheckIn = checkInDate.toLong()
+        val requestedCheckOut = checkOutDate.toLong()
+
+        val conflictingBooking = Bookings
             .selectAll()
             .where {
-                (Bookings.roomId eq roomId) and
+                (Bookings.hotelId eq hotelId) and (Bookings.roomId eq roomId) and
                         (Bookings.status eq "CONFIRMED")
             }
-            .firstOrNull()
+            .firstOrNull { booking ->
+                val existingCheckIn = booking[Bookings.checkInDate].toLong()
+                val existingCheckOut = booking[Bookings.checkOutDate].toLong()
 
-        if (existingBooking != null) {
+                existingCheckIn < requestedCheckOut &&
+                        existingCheckOut > requestedCheckIn
+            }
+
+        if (conflictingBooking != null) {
             return@dbQuery BookingResult.Conflict(
-                resultRowToBooking(existingBooking)
+                resultRowToBooking(conflictingBooking)
             )
         }
 

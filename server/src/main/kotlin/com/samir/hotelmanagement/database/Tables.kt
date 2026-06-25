@@ -51,6 +51,10 @@ object Rooms : Table("rooms") {
     val pricePerNight = double("price_per_night")
 
     override val primaryKey = PrimaryKey(id)
+
+    init {
+        uniqueIndex(hotelId, roomNumber)
+    }
 }
 
 object Bookings : Table("bookings") {

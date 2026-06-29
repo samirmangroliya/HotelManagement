@@ -35,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -60,7 +61,11 @@ import com.samir.domain.state.UiState
 import com.samir.hotelmanagement.theme.AppColors
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingViewModel
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
+import kotlin.time.Clock
 
  @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +81,21 @@ fun BookingScreen(
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
-    val dateRangePickerState = rememberDateRangePickerState()
+     val today = Clock.System.now()
+         .toLocalDateTime(TimeZone.currentSystemDefault())
+         .date
+         .atStartOfDayIn(TimeZone.currentSystemDefault())
+         .toEpochMilliseconds()
+
+     val dateRangePickerState = rememberDateRangePickerState(
+         selectableDates = object : SelectableDates {
+             override fun isSelectableDate(
+                 utcTimeMillis: Long
+             ): Boolean {
+                 return utcTimeMillis >= today
+             }
+         }
+     )
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -170,7 +189,17 @@ fun BookingScreen(
                 is UiState.Error -> Text("Error loading rooms", color = MaterialTheme.colorScheme.error)
                 else -> {}
             }
-            
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if(selectedRoom==null || dateRangePickerState.selectedEndDateMillis == null || dateRangePickerState.selectedStartDateMillis == null)
+            Text(
+                text = "* Please Select Booking Start and date with Room",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.Error,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+            )
             Spacer(modifier = Modifier.height(100.dp))
         }
 

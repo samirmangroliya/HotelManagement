@@ -57,10 +57,15 @@ fun Route.bookingRouting(bookingRepository: BookingRepository) {
         get("/{userId}") {
             val userId = call.parameters["userId"]?.toIntOrNull()
             if (userId == null) {
-                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid Hotel ID"))
+                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid User ID"))
                 return@get
             }
+
             val bookings = bookingRepository.getBookingsByUserId(userId)
+            if (bookings.isEmpty()) {
+                call.respond(HttpStatusCode.NotFound, BaseResponse<Unit>(success = false, message = "No bookings found for user"))
+                return@get
+            }
             call.respond(BaseResponse(success = true, message = "Bookings for user fetched successfully", data = bookings))
         }
 

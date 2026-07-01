@@ -32,6 +32,7 @@ import com.samir.core.Booking
 import com.samir.core.format
 import com.samir.core.toLocalDate
 import com.samir.domain.state.UiState
+import com.samir.hotelmanagement.ui.components.ErrorScreen
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingDetailsViewModel
 import org.koin.compose.koinInject
@@ -55,28 +56,7 @@ fun BookingDetails(
                 onBackClick = onBack
             )
         },
-        bottomBar = {
-            /*Surface(
-                tonalElevation = 2.dp,
-                shadowElevation = 8.dp,
-                modifier = Modifier.fillMaxWidth().navigationBarsPadding()
-            ) {
-                Button(
-                    onClick = { onBack() },
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "Cancel",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }*/
-        }
+        bottomBar = {}
     ) { innerPadding ->
 
         Box(
@@ -92,11 +72,7 @@ fun BookingDetails(
                 }
 
                 is UiState.Error -> {
-                    Text(
-                        text = (hotelState as UiState.Error).message,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    ErrorScreen((hotelState as UiState.Error).message)
                 }
 
                 else -> {}

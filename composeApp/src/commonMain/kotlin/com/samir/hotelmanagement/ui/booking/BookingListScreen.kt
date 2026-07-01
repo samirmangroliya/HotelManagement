@@ -18,6 +18,7 @@ import com.samir.core.format
 import com.samir.core.toLocalDate
 import com.samir.domain.state.UiState
 import com.samir.hotelmanagement.theme.AppColors
+import com.samir.hotelmanagement.ui.components.ErrorScreen
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingListViewModel
 import org.koin.compose.koinInject
@@ -72,11 +73,7 @@ fun BookingListScreen(
                     }
                 }
                 is UiState.Error -> {
-                    Text(
-                        (bookingsState as UiState.Error).message,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    ErrorScreen((bookingsState as UiState.Error).message)
                 }
                 else -> {}
             }

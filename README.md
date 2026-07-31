@@ -13,6 +13,8 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM
   you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
 * [/server](./server/src/main/kotlin) is for the Ktor server application.
+* // TO DO
+* Please check base url replace it with your IP Address which will help Rest API to work. and then check API is working or not.
 
 * [/shared](./shared/src) is for the code that will be shared between all targets in the project.
   The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you

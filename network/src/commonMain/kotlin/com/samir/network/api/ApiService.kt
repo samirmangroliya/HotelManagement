@@ -32,6 +32,10 @@ class ApiService(private val client: HttpClient) {
         return client.get("${Constants.BASE_URL}${Constants.HOTELS_URL}").body()
     }
 
+    suspend fun getHotelById(hotelId: Int): BaseResponse<Hotel> {
+        return client.get("${Constants.BASE_URL}${Constants.HOTELS_URL}/$hotelId").body()
+    }
+
     suspend fun getRooms(hotelId: Int): BaseResponse<List<Room>> {
         return client.get("${Constants.BASE_URL}${Constants.HOTELS_URL}/$hotelId/${Constants.ROOMS_URL}").body()
     }

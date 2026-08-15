@@ -1,9 +1,21 @@
  package com.samir.hotelmanagement.ui.booking
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -11,29 +23,56 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.samir.core.Booking
+import androidx.compose.ui.unit.sp
 import com.samir.core.Hotel
 import com.samir.core.Room
 import com.samir.domain.state.UiState
+import com.samir.hotelmanagement.theme.AppColors
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.viewmodels.BookingViewModel
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
+import kotlin.time.Clock
 
-const val DEFAULT_USER_ID = 1
-
-@OptIn(ExperimentalMaterial3Api::class)
+ @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingScreen(
     hotel: Hotel,
-    userId: Int = DEFAULT_USER_ID,
     onBack: () -> Unit,
+    onBookingSuccess: () -> Unit,
     viewModel: BookingViewModel = koinInject()
 ) {
     val roomsState by viewModel.roomsState.collectAsState()
@@ -41,13 +80,43 @@ fun BookingScreen(
 
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
-    val dateRangePickerState = rememberDateRangePickerState()
+    var showSuccessDialog by remember { mutableStateOf(false) }
+     val today = Clock.System.now()
+         .toLocalDateTime(TimeZone.currentSystemDefault())
+         .date
+         .atStartOfDayIn(TimeZone.currentSystemDefault())
+         .toEpochMilliseconds()
+
+     val dateRangePickerState = rememberDateRangePickerState(
+         selectableDates = object : SelectableDates {
+             override fun isSelectableDate(
+                 utcTimeMillis: Long
+             ): Boolean {
+                 return utcTimeMillis >= today
+             }
+         }
+     )
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(hotel.id) {
         viewModel.fetchRooms(hotel.id)
     }
 
+    LaunchedEffect(bookingState) {
+        when (bookingState) {
+            is UiState.Success -> {
+                showSuccessDialog = true
+            }
+            is UiState.Error -> {
+                snackbarHostState.showSnackbar("Booking Failed: ${(bookingState as UiState.Error).message}")
+            }
+            else -> {}
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopBar(
                 title = "Book Hotel",
@@ -62,18 +131,8 @@ fun BookingScreen(
                     onBookClick = {
                         val checkIn = dateRangePickerState.selectedStartDateMillis ?: return@BookingBottomBar
                         val checkOut = dateRangePickerState.selectedEndDateMillis ?: return@BookingBottomBar
-                        
-                        viewModel.bookRoom(
-                            Booking(
-                                id = 0,
-                                userId = userId,
-                                roomId = room.id,
-                                checkInDate = checkIn.toString(),
-                                checkOutDate = checkOut.toString(),
-                                totalPrice = room.pricePerNight * 2,
-                                status = "Pending"
-                            )
-                        )
+
+                        viewModel.bookRoom(hotel.id, room, checkIn, checkOut)
                     },
                     isLoading = bookingState is UiState.Loading
                 )
@@ -130,8 +189,36 @@ fun BookingScreen(
                 is UiState.Error -> Text("Error loading rooms", color = MaterialTheme.colorScheme.error)
                 else -> {}
             }
-            
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if(selectedRoom==null || dateRangePickerState.selectedEndDateMillis == null || dateRangePickerState.selectedStartDateMillis == null)
+            Text(
+                text = "* Please Select Booking Start and date with Room",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.Error,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+            )
             Spacer(modifier = Modifier.height(100.dp))
+        }
+
+        if (showSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text("Booking Successful") },
+                text = { Text("Your booking for ${hotel.name} has been confirmed.") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showSuccessDialog = false
+                            onBookingSuccess()
+                        }
+                    ) {
+                        Text("View My Bookings")
+                    }
+                }
+            )
         }
 
         if (showDatePicker) {
@@ -153,12 +240,27 @@ fun BookingScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionCard(state: DateRangePickerState, viewModel: BookingViewModel, onClick: () -> Unit) {
+    val isDateRangeSelected =
+        state.selectedStartDateMillis != null &&
+                state.selectedEndDateMillis != null
+
     Card(
         modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            .clickable(onClick = onClick),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isDateRangeSelected) {
+                AppColors.Success
+            } else {
+                AppColors.Error
+            }
+        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -190,14 +292,9 @@ fun RoomCard(room: Room, isSelected: Boolean, onSelect: () -> Unit) {
             .clickable { onSelect() },
         colors = CardDefaults.cardColors(containerColor = containerColor)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(room.type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Text("$${room.pricePerNight}/night", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(if (room.isAvailable) "Available" else "Booked", 
-                style = MaterialTheme.typography.labelSmall,
-                color = if (room.isAvailable) Color(0xFF4CAF50) else Color.Red
-            )
+        Column(modifier = Modifier.padding(13.dp)) {
+            Text(room.type, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, fontSize = 16.sp)
+            Text("$${room.pricePerNight} per day", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Gray)
         }
     }
 }
@@ -244,7 +341,7 @@ fun BookingBottomBar(
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Text("Confirm")
+                    Text("Book Now")
                 }
             }
         }

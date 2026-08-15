@@ -32,15 +32,5 @@ fun Route.hotelRouting(hotelRepository: HotelRepository) {
                 call.respond(HttpStatusCode.NotFound, BaseResponse<Unit>(success = false, message = "Hotel not found"))
             }
         }
-
-        get("{id}/rooms") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid ID"))
-                return@get
-            }
-            val rooms = hotelRepository.getRoomsByHotelId(id)
-            call.respond(BaseResponse(success = true, message = "Rooms fetched successfully", data = rooms))
-        }
     }
 }

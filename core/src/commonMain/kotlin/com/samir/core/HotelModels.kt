@@ -17,8 +17,7 @@ data class Room(
     val hotelId: Int,
     val roomNumber: String,
     val type: String,
-    val pricePerNight: Double,
-    val isAvailable: Boolean = true
+    val pricePerNight: Double
 )
 
 @Serializable
@@ -26,6 +25,8 @@ data class Booking(
     val id: Int,
     val userId: Int,
     val roomId: Int,
+    val hotelId:Int,
+    val totalDay: Int,
     val checkInDate: String,
     val checkOutDate: String,
     val totalPrice: Double,

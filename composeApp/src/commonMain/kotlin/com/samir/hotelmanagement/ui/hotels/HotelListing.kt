@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,17 +45,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.samir.core.Hotel
 import com.samir.domain.state.UiState
+import com.samir.hotelmanagement.ui.components.ErrorScreen
 import com.samir.hotelmanagement.ui.topbar.TopBar
 import com.samir.hotelmanagement.viewmodels.HotelViewModel
-import hotelmanagement.composeapp.generated.resources.Res
-import hotelmanagement.composeapp.generated.resources.app_name
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HotelList(onHotelClick: (Hotel) -> Unit = {}) {
+fun HotelList(onHotelClick: (Hotel) -> Unit = {}, onBack:() -> Unit) {
     val hotelViewModel: HotelViewModel = koinInject()
     val uiState by hotelViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -66,7 +63,10 @@ fun HotelList(onHotelClick: (Hotel) -> Unit = {}) {
     }
 
     Scaffold(
-        topBar = { TopBar(stringResource(Res.string.app_name)) }
+        topBar = { TopBar(
+            title = "Hotel List",
+            onBackClick = onBack
+        ) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -98,19 +98,8 @@ fun HotelList(onHotelClick: (Hotel) -> Unit = {}) {
                 }
 
                 is UiState.Error -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = state.message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { hotelViewModel.fetchHotels() }) {
-                            Text("Retry")
-                        }
+                    ErrorScreen(state.message, "Retry") {
+                        hotelViewModel.fetchHotels()
                     }
                 }
 

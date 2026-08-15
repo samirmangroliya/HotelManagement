@@ -2,7 +2,13 @@ package com.samir.hotelmanagement.database
 
 import com.samir.core.Hotel
 import com.samir.core.Room
-import org.jetbrains.exposed.sql.*
+import com.samir.hotelmanagement.tables.Hotels
+import com.samir.hotelmanagement.tables.Rooms
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 
 class HotelRepository {
     private fun resultRowToHotel(row: ResultRow) = Hotel(
@@ -18,12 +24,11 @@ class HotelRepository {
         hotelId = row[Rooms.hotelId],
         roomNumber = row[Rooms.roomNumber],
         type = row[Rooms.type],
-        pricePerNight = row[Rooms.pricePerNight],
-        isAvailable = row[Rooms.isAvailable]
+        pricePerNight = row[Rooms.pricePerNight]
     )
 
     suspend fun getAllHotels(): List<Hotel> = DatabaseFactory.dbQuery {
-        Hotels.selectAll().map(::resultRowToHotel)
+        Hotels.selectAll().orderBy(Hotels.id to SortOrder.ASC).map(::resultRowToHotel)
     }
 
     suspend fun getHotelById(id: Int): Hotel? = DatabaseFactory.dbQuery {
@@ -33,8 +38,15 @@ class HotelRepository {
     }
 
     suspend fun getRoomsByHotelId(hotelId: Int): List<Room> = DatabaseFactory.dbQuery {
-        Rooms.selectAll().where { Rooms.hotelId eq hotelId }
+        Rooms
+            .selectAll()
+            .where { Rooms.hotelId eq hotelId }
+            .orderBy(Rooms.roomNumber to SortOrder.DESC)
             .map(::resultRowToRoom)
+            .groupBy { it.type }
+            .map { (_, rooms) ->
+                rooms.first()
+            }
     }
 
     suspend fun createHotel(name: String, location: String, description: String, imageUrl: String?): Hotel? = DatabaseFactory.dbQuery {
@@ -53,7 +65,6 @@ class HotelRepository {
             it[Rooms.roomNumber] = roomNumber
             it[Rooms.type] = type
             it[Rooms.pricePerNight] = pricePerNight
-            it[Rooms.isAvailable] = true
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToRoom)
     }

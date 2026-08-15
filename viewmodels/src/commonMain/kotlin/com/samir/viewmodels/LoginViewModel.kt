@@ -5,13 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.samir.core.BaseResponse
 import com.samir.domain.usercase.LoginUseCase
 import com.samir.core.User
+import com.samir.core.PreferenceManager
 import com.samir.domain.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-   private val loginUseCase: LoginUseCase
+   private val loginUseCase: LoginUseCase,
+   private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
    private val _uiState =
@@ -32,6 +34,9 @@ class LoginViewModel(
 
             val response = loginUseCase(email, password)
 
+            response.data?.id?.let {
+               preferenceManager.saveInt(PreferenceManager.KEY_USER_ID, it)
+            }
             _uiState.value = UiState.Success(response)
 
          } catch (e: Exception) {

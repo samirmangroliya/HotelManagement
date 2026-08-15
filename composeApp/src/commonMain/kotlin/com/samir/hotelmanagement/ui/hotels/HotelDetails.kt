@@ -28,13 +28,11 @@ import coil3.compose.AsyncImage
 import com.samir.core.Hotel
 import com.samir.hotelmanagement.ui.topbar.TopBar
 
-const val userId = 1
-
 @Composable
 fun HotelDetails(
     hotel: Hotel,
     onBack: () -> Unit,
-    onBookNow: (Hotel, Int) -> Unit
+    onClickBookNow: (Hotel) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -50,7 +48,7 @@ fun HotelDetails(
                 modifier = Modifier.fillMaxWidth().navigationBarsPadding()
             ) {
                 Button(
-                    onClick = { onBookNow(hotel, userId) },
+                    onClick = { onClickBookNow(hotel) },
                     modifier = Modifier
                         .padding(12.dp)
                         .fillMaxWidth()

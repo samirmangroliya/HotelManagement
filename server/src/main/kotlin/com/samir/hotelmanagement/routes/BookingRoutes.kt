@@ -2,7 +2,10 @@ package com.samir.hotelmanagement.routes
 
 import com.samir.core.BaseResponse
 import com.samir.core.Booking
+import com.samir.core.format
+import com.samir.core.toLocalDate
 import com.samir.hotelmanagement.database.BookingRepository
+import com.samir.hotelmanagement.database.BookingResult
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
@@ -21,28 +24,48 @@ fun Route.bookingRouting(bookingRepository: BookingRepository) {
                 return@post
             }
 
-            val booking = bookingRepository.createBooking(
+            val result = bookingRepository.createBooking(
                 userId = bookingRequest.userId,
                 roomId = bookingRequest.roomId,
+                hotelId = bookingRequest.hotelId,
                 checkInDate = bookingRequest.checkInDate,
                 checkOutDate = bookingRequest.checkOutDate,
-                totalPrice = bookingRequest.totalPrice
+                totalPrice = bookingRequest.totalPrice,
+                totalDays = bookingRequest.totalDay
             )
 
-            if (booking != null) {
-                call.respond(HttpStatusCode.Created, BaseResponse(success = true, message = "Booking created successfully", data = booking))
-            } else {
-                call.respond(HttpStatusCode.InternalServerError, BaseResponse<Unit>(success = false, message = "Failed to create booking"))
+            when (result) {
+                is BookingResult.Success -> {
+                    call.respond(HttpStatusCode.Created, BaseResponse(success = true, message = "Booking created successfully", data = result.booking))
+                }
+                is BookingResult.Conflict -> {
+                    val existing = result.existingBooking
+                    val checkIn = existing.checkInDate.toLocalDate().format()
+                    val checkOut = existing.checkOutDate.toLocalDate().format()
+                    
+                    call.respond(HttpStatusCode.Conflict, BaseResponse<Unit>(
+                        success = false, 
+                        message = "Room is already booked from $checkIn to $checkOut. Please try other dates or check for other available rooms."
+                    ))
+                }
+                is BookingResult.Error -> {
+                    call.respond(HttpStatusCode.InternalServerError, BaseResponse<Unit>(success = false, message = result.message))
+                }
             }
         }
 
         get("/{userId}") {
             val userId = call.parameters["userId"]?.toIntOrNull()
             if (userId == null) {
-                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid Hotel ID"))
+                call.respond(HttpStatusCode.BadRequest, BaseResponse<Unit>(success = false, message = "Invalid User ID"))
                 return@get
             }
+
             val bookings = bookingRepository.getBookingsByUserId(userId)
+            if (bookings.isEmpty()) {
+                call.respond(HttpStatusCode.NotFound, BaseResponse<Unit>(success = false, message = "No bookings found for user"))
+                return@get
+            }
             call.respond(BaseResponse(success = true, message = "Bookings for user fetched successfully", data = bookings))
         }
 

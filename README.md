@@ -1,97 +1,70 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
+# HotelManagement
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+HotelManagement is a full-stack Kotlin Multiplatform (KMP) project that provides a comprehensive solution for hotel booking and management. It targets multiple platforms including Android, iOS, Web, Desktop (JVM), and a Backend Server using Ktor.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## Project Overview
 
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
-* // TO DO
-* Please check base url replace it with your IP Address which will help Rest API to work. and then check API is working or not.
+This project demonstrates the power of sharing code across different platforms while maintaining the flexibility to implement platform-specific features when needed.
 
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+### Key Modules
 
-### Build and Run Android Application
+*   **[:composeApp](./composeApp)**: The primary module for UI code shared across Android, iOS, Desktop, and Web using Compose Multiplatform.
+*   **[:server](./server)**: A Ktor-based backend application that handles API requests, user authentication, and database persistence.
+*   **[:network](./network)**: A shared networking layer containing the Ktor HTTP client and `ApiService` for communicating with the backend.
+*   **[:core](./core)**: Shared data models (e.g., `Hotel`, `Room`, `User`, `Booking`) used by both client and server.
+*   **[:di](./di)**: Centralized dependency injection configuration using Koin.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+### Key Features
 
-### Build and Run Desktop (JVM) Application
+*   **User Authentication**: Secure login and registration flows.
+*   **Hotel Discovery**: Browse a catalog of hotels and view detailed information.
+*   **Room Management**: Explore available rooms within a hotel.
+*   **Booking System**: Create and manage hotel bookings seamlessly across platforms.
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+## Configuration: Server URL & IP Address
 
-### Build and Run Server
+To ensure the client applications can connect to the server, you may need to configure the server's IP address and port.
 
-To build and run the development version of the server, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :server:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :server:run
-  ```
+### 1. Client-Side (Base URL)
+The client applications use a central constant for the API base URL. Update this to match your server's IP address:
+*   **File**: `network/src/commonMain/kotlin/com/samir/network/Constants.kt`
+*   **Constant**: `BASE_URL` here you can use your own IP address to run app in android emulator
+*   *Note: Use `http://10.0.2.2:8081/` for Android Emulators to reach a server running on your local machine.*
 
-### Build and Run Web Application
-
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
-- for the Wasm target (faster, modern browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-- for the JS target (slower, supports older browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:jsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-    ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+### 2. Server-Side (Host & Port)
+The server's running configuration can be adjusted here:
+*   **File**: `server/src/main/kotlin/com/samir/hotelmanagement/Constants.kt`
+*   **Constants**: `SERVER_HOST` and `SERVER_PORT`
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+## Getting Started
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+### Build and Run Server
+
+To start the backend server:
+- **macOS/Linux**: `./gradlew :server:run`
+- **Windows**: `.\gradlew.bat :server:run`
+
+### Build and Run Android Application
+
+- **macOS/Linux**: `./gradlew :composeApp:assembleDebug`
+- **Windows**: `.\gradlew.bat :composeApp:assembleDebug`
+
+### Build and Run Desktop (JVM) Application
+
+- **macOS/Linux**: `./gradlew :composeApp:run`
+- **Windows**: `.\gradlew.bat :composeApp:run`
+
+### Build and Run Web Application (Wasm)
+
+- **macOS/Linux**: `./gradlew :composeApp:wasmJsBrowserDevelopmentRun`
+- **Windows**: `.\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun`
+
+### Build and Run iOS Application
+
+Open the `iosApp` directory in Xcode or use the run configuration in Android Studio.
+
+---
+
+Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html) and [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/).

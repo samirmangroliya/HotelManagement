@@ -75,6 +75,9 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.ktor.serialization.kotlinx.json)
+                api(libs.kotlinx.datetime)
+                implementation(libs.napier)
+                implementation(libs.koin.core)
             }
         }
 
@@ -89,6 +92,7 @@ kotlin {
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
+                implementation(libs.androidx.security.crypto)
             }
         }
 

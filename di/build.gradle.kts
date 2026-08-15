@@ -77,6 +77,7 @@ kotlin {
                 implementation(projects.data)
                 implementation(projects.viewmodels)
                 implementation(projects.network)
+                implementation(projects.core)
                 implementation(libs.koin.core)
                 // Add KMP dependencies here
             }

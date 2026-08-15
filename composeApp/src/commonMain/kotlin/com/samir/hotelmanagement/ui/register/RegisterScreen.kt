@@ -33,6 +33,7 @@ import com.samir.domain.state.UiState
 import com.samir.viewmodels.RegisterViewModel
 import hotelmanagement.composeapp.generated.resources.Res
 import hotelmanagement.composeapp.generated.resources.ic_arrow_back
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -88,6 +89,10 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterSuccess: () -> Unit = {}) 
         }
         errorMessage = null
         return true
+    }
+
+    LaunchedEffect(firstName, lastName, email, phone) {
+        Napier.d("Input changed: $firstName $lastName $email $phone", tag = "RegisterScreen")
     }
 
     Column(
@@ -176,6 +181,7 @@ fun RegisterScreen(onBack: () -> Unit = {}, onRegisterSuccess: () -> Unit = {}) 
             Button(
                 onClick = {
                     if (validate()) {
+                        Napier.i("Attempting to register user: $email", tag = "RegisterScreen")
                         viewModel.register(
                             firstName,
                             lastName,
@@ -211,6 +217,7 @@ fun ShowUIState(uiState: UiState<BaseResponse<User>>, onRegisterSuccess: () -> U
         is UiState.Success -> {
             val data = uiState.data
             if (data.success) {
+                Napier.i("Registration successful for user: ${data.data?.email}", tag = "RegisterScreen")
                 Text(
                     text = "Registration Successful...Login Now...",
                     fontStyle = MaterialTheme.typography.titleLarge.fontStyle,
@@ -224,6 +231,7 @@ fun ShowUIState(uiState: UiState<BaseResponse<User>>, onRegisterSuccess: () -> U
                     onRegisterSuccess()
                 }
             } else {
+                Napier.e("Registration failed: ${data.message}", tag = "RegisterScreen")
                 Text(
                     text = data.message,
                     color = MaterialTheme.colorScheme.error
@@ -232,7 +240,7 @@ fun ShowUIState(uiState: UiState<BaseResponse<User>>, onRegisterSuccess: () -> U
         }
 
         is UiState.Error -> {
-
+            Napier.e("Registration error: ${uiState.message}", tag = "RegisterScreen")
             Text(
                 text = uiState.message,
                 color = MaterialTheme.colorScheme.error
